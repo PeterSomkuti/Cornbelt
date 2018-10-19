@@ -1,5 +1,6 @@
 import numpy as np
 import h5py
+from bbox import *
 
 '''
 This script subsets the big fluorescence data for P and S polarisation
@@ -20,11 +21,6 @@ print("{:d} common soundings.".format(len(intersect)))
 
 srt_S = np.searchsorted(h5_S['Exposure_id'][:], intersect)
 srt_P = np.searchsorted(h5_P['Exposure_id'][:], intersect)
-
-lon_min = -102.5
-lon_max = -85.5
-lat_min = 37.5
-lat_max = 47.5
 
 lon = h5_S['lon'][:][srt_S]
 lat = h5_S['lat'][:][srt_S]

@@ -9,11 +9,7 @@ import matplotlib.colors as mcol
 from cartopy import crs as ccrs
 import cartopy.feature as cfeature
 
-# Bounding box definition
-lon_min = -102.5
-lon_max = -85.5
-lat_min = 37.5
-lat_max = 47.5
+from bbox import *
 
 # Read land cover data, as well as land cover labels
 lc_nc = Dataset('ESACCI-LC-L4-LCCS-Map-300m-P1Y-2015-v2.0.7.nc', 'r')
@@ -32,7 +28,7 @@ gosat_h5 = h5py.File('fluorescence_subset.h5', 'r')
 # Grab the LC data
 lc_gosat = gosat_h5['lccs_fraction'][:]
 
-# Now subset the original LC data
+# Now subset the original LC data according to the bounding box
 lon_min_idx = np.searchsorted(lc_nc.variables['lon'][:], lon_min)
 lon_max_idx = np.searchsorted(lc_nc.variables['lon'][:], lon_max)
 lat_min_idx = len(lc_nc.variables['lat']) - np.searchsorted(lc_nc.variables['lat'][:][::-1], lat_min)
@@ -46,6 +42,7 @@ lccs_lat = lc_nc.variables['lat'][lat_max_idx:lat_min_idx]
 
 lccs = lccs_box.flatten()
 
+# Mask water bodies
 lccs_box = np.ma.masked_equal(lccs_box, 210)
 
 # Remove ALL water bodies, as we are not measuring over those surfaces
@@ -95,9 +92,11 @@ plt.close()
 
 # Plot a map showing off the GOSAT sampling and the LC map
 
-# Make custom colormap for LC classes
+# Make custom colormap for LC classes, accoring to the original ESA color code
 levels = np.append(lc_csv['NB_LAB'].values, 999) 
-colors = [(lc_csv['R'][i]/255, lc_csv['G'][i]/255, lc_csv['B'][i]/255, 1.0) for i in range(len(lc_csv))]
+colors = [(lc_csv['R'][i]/255,
+           lc_csv['G'][i]/255,
+           lc_csv['B'][i]/255, 1.0) for i in range(len(lc_csv))]
 
 cmap, norm = mcol.from_levels_and_colors(levels, colors, extend='neither')
 
@@ -144,22 +143,24 @@ for p_idx in [1,2]:
         h = ccrs.PlateCarree().transform_points(ccrs.PlateCarree(),
                                                 gosat_h5['lon'][:],
                                                 gosat_h5['lat'][:])[:, :2].T
-        kde = sp.stats.gaussian_kde(h, bw_method=0.05)
-        k = 100
+        kde = sp.stats.gaussian_kde(h, bw_method=0.03)
+        k = 150
         tx, ty = np.meshgrid(np.linspace(lon_min, lon_max, 2*k),
                              np.linspace(lat_min, lat_max, k))
         mesh = np.vstack((tx.ravel(), ty.ravel()))
         v = kde(mesh).reshape((k, 2*k))
         
-        cmap = plt.get_cmap('viridis')
+        cmap = plt.get_cmap('rainbow')
         my_cmap = cmap(np.arange(cmap.N))
         my_cmap[:, -1] = np.linspace(0, 1, cmap.N)
+        my_cmap[:, -1] = np.power(my_cmap[:, -1], 0.3)
         my_cmap = mcol.ListedColormap(my_cmap)
 
         ax.imshow(v,
                   cmap=my_cmap,
                   extent=[lon_min, lon_max, lat_min, lat_max],
-                  vmax=np.percentile(v, 98),
+                  vmax=np.percentile(v, 95),
+                  interpolation='bicubic',
                   transform=ccrs.PlateCarree(),
                   rasterized=True)
         '''
