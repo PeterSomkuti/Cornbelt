@@ -1,0 +1,99 @@
+\documentclass[preprint, a4paper, 10pt, times]{elsarticle}
+
+\usepackage{lineno, hyperref}
+
+\modulolinenumbers[5]
+
+\journal{Agricultural and Forest Meteorology\tnoteref{mytitlenote}}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Elsevier bibliography styles
+%%%%%%%%%%%%%%%%%%%%%%%
+%% To change the style, put a % in front of the second line of the current style and
+%% remove the % from the second line of the style you would like to use.
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Numbered
+%\bibliographystyle{model1-num-names}
+
+%% Numbered without titles
+%\bibliographystyle{model1a-num-names}
+
+%% Harvard
+%\bibliographystyle{model2-names.bst}\biboptions{authoryear}
+
+%% Vancouver numbered
+%\usepackage{numcompress}\bibliographystyle{model3-num-names}
+
+%% Vancouver name/year
+%\usepackage{numcompress}\bibliographystyle{model4-names}\biboptions{authoryear}
+
+%% APA style
+\bibliographystyle{model5-names}\biboptions{authoryear}
+
+%% AMA style
+%\usepackage{numcompress}\bibliographystyle{model6-num-names}
+
+%% `Elsevier LaTeX' style
+%\bibliographystyle{elsarticle-num}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{A Multi-Satellite Investigation of the US Corn Belt in the Period 2010-2016 with a Focus on Solar-Induced Fluorescence}
+
+%% Group authors per affiliation:
+\author[uol,nceo]{Peter Somkuti\corref{cor1}\fnref{fn1}}
+\ead{ps345@le.ac.uk}
+\cortext[cor1]{Corresponding author, now at Colorado State University}
+\fntext[fn1]{This is the specimen author footnote.}
+\address[uol]{University of Leicester, Department of Physics of Astronomy, Leicester, UK}
+\address[nceo]{National Centre for Earth Observation, University of Leicester, Leicester, UK}
+
+\begin{abstract}
+This template helps you to create a properly formatted \LaTeX\ manuscript.
+\end{abstract}
+
+\end{frontmatter}
+\linenumbers
+
+\section{Introduction}
+
+Talk about corn belt, SIF, and other studies as well as their shortcomings. Mention especially the baseline problem.
+
+\section{Materials \& Methods}
+\subsection{Solar-Induced Fluorescence from GOSAT}
+
+The Greenhouse Gases Observing Satellite (GOSAT) is the first mission solely dedicated to measure atmospheric concentrations of carbon dioxide (CO$_2$) and method (CH$_4$). Launched in early 2009 and operated by the Japan Aerospace Exploration Agency (JAXA), GOSAT employs a Fourier-transform spectrometer (TANSO-FTS) to passively measure sunlight back-reflected from the surface of the Earth. These hyper-spectral measurements are then used together with appropriate physical models and inversion schemes to retrieve the atmospheric concentration of trace gases like CO$_2$, CH$_4$ and even H$_2$O.
+
+Due to the high spectral resolution of TANSO-FTS in the O$_2$ A-band at wavelength of $760\:\mathrm{nm}$, several solar (Fraunhofer) lines can be resolved and utilised for the retrieval of SIF. We utilise the retrieval method described in \citet{Frankenberg2011}. This so-called \textit{physically-based} retrieval is based on the Fraunhofer line discrimination method, first described in [REF]. Briefly summarised, the method relies on the fact that any additive radiation originating from the surface will reduce the fractional depth of Fraunhofer lines in the top-of-atmosphere (TOA) spectrum. It is therefore possible to decouple reflectance from the additive fluorescence contribution to the total TOA radiance. TANSO-FTS records radiances in the shortwave infrared wavelength range in two linear polarization states: P - parallel, and S - perpendicular to the plane of incidence (? or is it principal plane?).
+
+To perform the GOSAT SIF retrievals we employ the University of Leicester Full-Physics algorithm \citep{Cogan2012}, called UoL-FP. It derives atmospheric and surface quantities from hyper-spectral measurements via its two components: a full-physics forward model, which accurately models the solar radiation entering and propagating through Earth's atmosphere, its interaction with the surface and finally the finite response at the detector on the space-based platform. The forward model calculations are then coupled with the second component of the algorithm: an inversion scheme that applies the Levenberg-Marquardt modification to the classic Gauss-Newton method, in order to modify the input parameters of the forward model (the so-called state vector) to match model calculation with real measurements. Inferring atmospheric and surface quantities as well as quantifying the uncertainty on each retrieved parameter is performed using a Bayesian optimal estimation (OE) framework according to \citet{Rodgers2000}.
+
+We make use of the same processing pipeline which was previously used for the generation of high-quality atmospheric trace gas data sets \citep{Buchwitz2017} at the University of Leicester, using the same core full-physics algorithm. 
+
+
+The surface pressure is informed by the ECMWF ERA-Interim model, whereas the surface albedo is estimated through the measured radiances themselves assuming a Lambertian surface model.
+
+ GOSAT retrievals over land surfaces from January 2010 until December 2016 were processed using ECWMF ERA-Interim data for surface pressure and specific humidity profiles. , and both radiances were processed independently. To remove the scenes with significant cloud contamination, a cloud screening algorithm was run beforehand. 
+
+\subsection{Spatially and Temporally Collocated Satellite Measurements}
+\subsection{Carbon Fluxes from Inversion of GOSAT CO2 Retrievals}
+\subsection{Agricultural Statistics from USDA}
+
+
+\section{Results}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../SIF_overview.pdf}
+\caption{default}
+\label{default}
+\end{figure}
+
+\section*{References}
+\bibliography{mybibfile}
+
+\end{document}
