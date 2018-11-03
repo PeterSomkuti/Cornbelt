@@ -65,35 +65,99 @@ Talk about corn belt, SIF, and other studies as well as their shortcomings. Ment
 
 \section{Materials \& Methods}
 \subsection{Solar-Induced Fluorescence from GOSAT}
+\label{sec:GOSAT_SIF}
 
 The Greenhouse Gases Observing Satellite (GOSAT) is the first mission solely dedicated to measure atmospheric concentrations of carbon dioxide (CO$_2$) and method (CH$_4$). Launched in early 2009 and operated by the Japan Aerospace Exploration Agency (JAXA), GOSAT employs a Fourier-transform spectrometer (TANSO-FTS) to passively measure sunlight back-reflected from the surface of the Earth. These hyper-spectral measurements are then used together with appropriate physical models and inversion schemes to retrieve the atmospheric concentration of trace gases like CO$_2$, CH$_4$ and even H$_2$O.
 
-Due to the high spectral resolution of TANSO-FTS in the O$_2$ A-band at wavelength of $760\:\mathrm{nm}$, several solar (Fraunhofer) lines can be resolved and utilised for the retrieval of SIF. We utilise the retrieval method described in \citet{Frankenberg2011}. This so-called \textit{physically-based} retrieval is based on the Fraunhofer line discrimination method, first described in [REF]. Briefly summarised, the method relies on the fact that any additive radiation originating from the surface will reduce the fractional depth of Fraunhofer lines in the top-of-atmosphere (TOA) spectrum. It is therefore possible to decouple reflectance from the additive fluorescence contribution to the total TOA radiance. TANSO-FTS records radiances in the shortwave infrared wavelength range in two linear polarization states: P - parallel, and S - perpendicular to the plane of incidence (? or is it principal plane?).
+Due to the high spectral resolution of TANSO-FTS in the O$_2$ A-band at wavelength of $760\:\mathrm{nm}$, several solar (Fraunhofer) lines can be resolved and utilised for the retrieval of SIF. We utilise the retrieval method described in \citet{Frankenberg2011}. This so-called \textit{physically-based} retrieval is derived from the Fraunhofer line discrimination method, first described in [REF]. Briefly summarised, the method relies on the fact that any additive radiation originating from the surface will reduce the fractional depth of Fraunhofer lines in the top-of-atmosphere (TOA) spectrum. It is therefore possible to decouple reflectance from the additive fluorescence contribution to the total TOA radiance. TANSO-FTS records radiances in the shortwave infrared wavelength range in two linear polarization states: P - parallel, and S - perpendicular to the plane of incidence (? or is it principal plane?).
 
-To perform the GOSAT SIF retrievals we employ the University of Leicester Full-Physics algorithm \citep{Cogan2012}, called UoL-FP. It derives atmospheric and surface quantities from hyper-spectral measurements via its two components: a full-physics forward model, which accurately models the solar radiation entering and propagating through Earth's atmosphere, its interaction with the surface and finally the finite response at the detector on the space-based platform. The forward model calculations are then coupled with the second component of the algorithm: an inversion scheme that applies the Levenberg-Marquardt modification to the classic Gauss-Newton method, in order to modify the input parameters of the forward model (the so-called state vector) to match model calculation with real measurements. Inferring atmospheric and surface quantities as well as quantifying the uncertainty on each retrieved parameter is performed using a Bayesian optimal estimation (OE) framework according to \citet{Rodgers2000}.
+To perform the GOSAT SIF retrievals we employ the University of Leicester Full-Physics algorithm \citep{Cogan2012}, called UoL-FP. It derives atmospheric and surface quantities from hyper-spectral measurements via its two components: a full-physics forward model, which accurately models the solar radiation entering and propagating through Earth's atmosphere, its interaction with the surface and finally the finite response at the detector on the space-based platform. The forward model calculations are then coupled with the second component of the algorithm: a non-linear inversion scheme that applies the Levenberg-Marquardt modification to the Gauss-Newton method, in order to modify the input parameters of the forward model (the so-called state vector) to match model calculation with real measurements. Inferring atmospheric and surface quantities as well as quantifying the uncertainty on each retrieved parameter is performed using a Bayesian optimal estimation (OE) framework according to \citet{Rodgers2000}.
 
-We make use of the same processing pipeline which was previously used for the generation of high-quality atmospheric trace gas data sets \citep{Buchwitz2017} at the University of Leicester, using the same core full-physics algorithm. 
+We make use of the same processing pipeline which was previously utilized for the generation of high-quality atmospheric trace gas data sets \citep{Buchwitz2017,Trent2018} at the University of Leicester, using the same core retrieval algorithm. On a per-scene (measurement) basis, the surface pressure is informed by the ECMWF ERA-Interim model, and the surface albedo is estimated through the measured radiances themselves assuming a Lambertian surface model.
+
+Following the retrieval strategy in \citet{Frankenberg2011}, we retrieve SIF at two micro-windows at $755\:\mathrm{nm}$ ($755.86 - 758.95$ nm) and $772\:\mathrm{nm}$ ($769.59 - 774.83$ nm), as well as the two polarizations, independently. For both retrieval windows, the SIF radiances are represented by a constant additive offset to the TOA radiances, along with a linear surface albedo (constant + slope), and instrument dispersion shift and stretch. As there are weak oxygen lines present in the $772\:\mathrm{nm}$ window, surface pressure is additionally retrieved in that micro-window. To exclude any scenes with large cloud contamination, we ran a cloud-screening algorithm beforehand. Only those GOSAT scenes are processed where the apparent surface pressure deviated by less than $100\:\mathrm{hPa}$ from the ERA-Interim prediction.
+
+A crucial step in the SIF retrieval process is the bias correction. As established by \citet{Frankenberg2011}, small non-linearities in the analogue-to-digital conversion of the TANSO-FTS interferograms lead to the same fractional reduction of Fraunhofer lines as any SIF signal would do and thus result in unphysical SIF values. In order to rid the measurements of these instrument artefacts, the retrieved SIF values need to be corrected. To achieve the bias correction, we apply a slightly different method compared to \citet{Frankenberg2011}. First, we use the ESA CCI Land Cover map v2.0.7 \citep{Bontemps2013} to obtain the land cover classes for the surfaces seen by each GOSAT measurement (see Section~\ref{sec:collocation}). To identify footprints which can be assumed to be permanently free of vegetation, we consider only surfaces where at least $95\%$ of all land cover-class pixels within the footprint belong to the types: urban, desert, snow and ice, or any bare type. This approach has the advantage that not only highly reflective surfaces like ice shields or deserts are used for the correction process, but also darker surfaces such as mountainous regions.
+
+The calibration curve is produced via the relationship between retrieved offset ($z_0$) and the mean radiance in the entire first GOSAT band ($\overline{I}_1$). Ideally, this curve would be flat, centered around zero, however the instrumental artefacts lead to a somewhat complicated shape, as shown in Figure XX [should I put a figure here? or is this too technical already..]. As this bias is of purely instrumental nature, it is not necessarily safe to assume that the bias remained the same over the long operational time of the instrument. Thus, we adopt three different strategies to correct for this instrumental bias. For the first one, we collect retrievals over non-fluorescing areas in seasonal aggregates (DJF, MAM, JJA, SON). For every season in every year the SIF retrievals are being corrected according to the calibration curve derived at that particular season-year combination. The second strategy is similar, the only difference being that retrievals for an entire year are collected. The main difference in the two methods is the aggregation period: shorter periods make the calibration curves noisy, however are more able to catch instrumental issues which may affect the bias. The third and most elaborate strategy takes the time-dependence more explicitly into account. First, the all retrievals over non-fluorescing areas are collected and binned two dimensionally: monthly bins for the time dimension, and $14$ bins in the radiance dimension. Through this regular 2D grid, a spline interpolation function is used to calculate the bias at any given point in time-radiance space.  
 
 
-The surface pressure is informed by the ECMWF ERA-Interim model, whereas the surface albedo is estimated through the measured radiances themselves assuming a Lambertian surface model.
+\subsection{Spatially and Temporally Collocated Earth Observation Data}
+\label{sec:collocation}
 
- GOSAT retrievals over land surfaces from January 2010 until December 2016 were processed using ECWMF ERA-Interim data for surface pressure and specific humidity profiles. , and both radiances were processed independently. To remove the scenes with significant cloud contamination, a cloud screening algorithm was run beforehand. 
+GOSAT/TANSO-FTS was designed to measure atmospheric quantities, and thus differs from imaging-type measurement concepts (e.g.~MODIS) that are tailored to the measurement of surface quantities. The high-resolution spectrometer points at one location at a time with an instantaneous field of view (IFOV) of ZYX$^\circ$, which corresponds roughly to a circular footprint with $10.5\:\mathrm{km}$ diameter at nadir viewing geometry. As a consequence, it is necessary to consider the specific sampling pattern for the data sets in the analysis in order to avoid sampling bias (see Section~\ref{sec:sampling_bias}).
 
-\subsection{Spatially and Temporally Collocated Satellite Measurements}
+For every GOSAT scene, we consider the full footprint as defined by the four extremal points of the footprint ellipse (as given in the L1B data). The following Earth observation datasets are then sampled:
+
+\begin{itemize}
+\item ESA CCI Land Cover v2.0.7 ($300\:\mathrm{m}$ resolution, $2010-2015$, for scenes after $2015$, the $2015$ map was used) \citep{Bontemps2013}
+\item ESA CCI Soil Moisture v3.2 ($0.25^\circ$ resolution, $2010-2015$) \citep{Dorigo2017}
+\item MODIS/Aqua MYD13C1 V006 Vegetation Indices ($0.05^\circ$ resolution, $2010-2016$) \citep{MYD13C1}
+\item MODIS/Aqua MYD11C2 V006 Land Surface Temeprature ($0.05^\circ$ resolution, $2010-2016$) \citep{MYD11C2}
+\item SPOT/VEGETATION Leaf Area Index V2.0.1 ($1\:\mathrm{km}$ resolution, $2010-2016$)
+\item SPOT/VEGETATION Fractional Vegetation Cover V2.0.1 ($1\:\mathrm{km}$ resolution, $2009-2016$)
+\item TRMM (3B43, multi-satellite) precipitation ($0.25^\circ$ resolution, $2010-2016$)
+\end{itemize}
+
+For the MODIS/Aqua, ESA CCI Land Cover and SPOT/VEGETATION datasets, the scene-specific footprint is fully taken into account. Only those pixels are aggregated to the scene-specific value, whose pixel area overlaps by at least $50\%$ with the GOSAT footprint. Soil moisture and TRMM precipitation data, however, are of lower resolution where sub-pixel aggregation is not required. For TRMM, the grid box is taken in which the GOSAT footprint lies, and for the soil moisture data (which is supplied on grid points rather than grid boxes [DOUBLE CHECK!!]), bi-linear interpolation of the closest four grid points is used.
+
+In the time dimension, linear interpolation is used for all data sets except for land cover data (annual) and TRMM (monthly).
+
+
 \subsection{Carbon Fluxes from Inversion of GOSAT CO2 Retrievals}
+\label{sec:fluxes}
+LIANG PLEASE HELP!
+
 \subsection{Agricultural Statistics from USDA}
+\label{sec:usda}
+
+\subsection{GOSAT Sampling Bias}
+\label{sec:sampling_bias}
+
+As mentioned during the discussion on GOSAT SIF retrievals (Section~\ref{sec:GOSAT_SIF}), the FTS instrument, due to its pointing strategy/nature, causes potential sampling biases due to the pointing locations. While there is an inherent bias due to clouds, as GOSAT SIF retrievals can not be performed in the presence of thick clouds, the sampling strategy results in non-uniform selection of surfaces throughout the region of interest. Illustrated in Figure~\ref{fig:sampling}, the sampling density is shown for the entire time period from the beginning of $2010$ until the end of $2016$. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../coverage_map.png}
+\caption{Land cover classes (left) and GOSAT sampling density shown for the region of interest ($104$W - $87.5W$, $37$N - $49$N). Yellow land cover pixels correspond to crop, orange represents grassland, green-colored pixels are various tree types, and red areas are urban regions. In the right picture, all GOSAT soundings for the entire time period $2010-2016$ are collected and visualized as a density map to illustrate the both sparse and irregular sampling pattern.}
+\label{fig:sampling}
+\end{figure}
+
+The question arises, whether the sampling of the various surfaces of the chosen region of interest is representative of the entire area. To that end, we compare the most common land cover classes (Figure~\ref{fig:sampling} left) of the entire region of interest at the native resolution ($300\:\mathrm{m}$) of the ESA CCI Land Cover data set (excluding water bodies) to the sub-pixel aggregated data at the location of the GOSAT footprints. The result of the relative occurrence of the six most common types is shown in Figure~\ref{fig:lc_coverage}. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../lc_coverage.pdf}
+\caption{default}
+\label{fig:lc_coverage}
+\end{figure}
+
+Not surprising, more than $75\%$ of surfaces belong to either rainfed cropland or grassland types. The third most common surface type (deciduous tree cover) is mainly due to Ozark National Forest in Missouri, Superior National Forest as well as forests in northern Wisconsin. For the total period, GOSAT is well representing the overall composition of land cover classes of the region of interest. The largest differences are seen for flooded tree cover, where GOSAT is slightly over-repensenting ($+1.69\%$), and grassland, where GOSAT is under-representing ($-3.25\%$).
+
+Repeating the same analysis on a monthly basis, a different picture than Figure~\ref{fig:lc_coverage} can arise, as GOSAT's sampling is not only non-uniform geographically, but also changed over time. In Figure~\ref{fig:lc_diff_monthly}, the differences between GOSAT-seen and total ROI land cover class coverage for monthly aggregates is shown for the three most prevalent classes. We observe that differences can change somewhat drastically, and for certain months even reach $10\%$. The problematic months, in which the differences are fairly large for cropland and grassland LC types are $2013/04$, $2014/02$, $2014/03$, $2014/04$, $2014/11$, $2016/08$, $2015/02$ and $2015/04$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../lc_diff_monthly.pdf}
+\caption{Jan 2015 has not been taken into account due to the low number of measurements in that month.}
+\label{fig:lc_diff_monthly}
+\end{figure}
 
 
+
+ 
 \section{Results}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics{../SIF_overview.pdf}
 \caption{default}
-\label{default}
+\label{fig:sif_ts}
 \end{figure}
 
-\section*{References}
+
+
+\section*{}
 \bibliography{mybibfile}
 
 \end{document}

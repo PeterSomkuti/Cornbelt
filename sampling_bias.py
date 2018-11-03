@@ -1,3 +1,22 @@
+#import matplotlib
+#matplotlib.use('agg')
+
+from matplotlib import rcParams
+
+rcParams['font.family'] = 'serif'
+rcParams['font.serif'] = ['Times', 'Times New Roman']
+
+rcParams['xtick.labelsize'] = 7
+rcParams['ytick.labelsize'] = 7
+rcParams['ytick.labelsize'] = 7
+rcParams['axes.labelsize'] = 8
+rcParams['axes.titlesize'] = 10
+rcParams['mathtext.fontset'] = 'stix'
+
+
+
+
+
 import h5py
 from netCDF4 import Dataset
 import numpy as np
@@ -22,6 +41,8 @@ lc_labels[2] = "Rainfed cropland\n(herbaceous cover)"
 lc_labels[6] = "Mosaic natural vegetation\n(tree, shrub, herbaceous cover)\n(>50%) / cropland (<50%)"
 lc_labels[8] = "Tree cover, broadleaved,\ndeciduous (closed to open >15%)"
 lc_labels[28] = "Tree cover, flooded,\nfresh or brakish water"
+lc_labels[17] = "Tree cover, mixed leaf type\n(broadleaved and needleleaved)"
+
 
 # Read the fluorescence subset
 gosat_h5 = h5py.File('fluorescence_subset.h5', 'r')
@@ -69,27 +90,89 @@ lc_sort_GOSAT = np.argsort(lc_un_GOSAT[1])[::-1]
 
 # Make a nice barplot with the results
 bar_width = 0.25
-plt.figure(figsize=(4,3), dpi=300)
+plt.figure(figsize=(2.5, 3), dpi=300)
 
-plt.bar(np.arange(len(lc_percs_ALL)) - bar_width / 2,
-        lc_percs_ALL[lc_sort_ALL],
-        bar_width, label='Region of interest')
+plt.barh(np.arange(len(lc_percs_ALL)) - bar_width / 2,
+         lc_percs_ALL[lc_sort_ALL],
+         bar_width, label='Region of interest')
 
-plt.bar(np.arange(len(lc_percs_ALL)) + bar_width / 2,
-        lcsum[lc_sort_ALL],
-        bar_width, label='GOSAT sampling')
+plt.barh(np.arange(len(lc_percs_ALL)) + bar_width / 2,
+         lcsum[lc_sort_ALL],
+         bar_width, label='GOSAT sampling')
 
-plt.xticks(np.arange(len(lc_percs_ALL)),
-           lc_labels[lc_sort_ALL], rotation='vertical',
+plt.yticks(np.arange(len(lc_percs_ALL)),
+           lc_labels[lc_sort_ALL], # rotation='vertical',
            fontsize=8)
 
-plt.xlim(-0.5, 5.5)
-plt.ylabel('Coverage [%]')
+plt.ylim(-0.5, 5.5)
+plt.xlabel('Coverage [%]')
 plt.legend()
 plt.savefig('lc_coverage.pdf', bbox_inches='tight')
 plt.close()
 
 
+# We want to do this on a monthly basis, so we know if we have sampling bias
+# compared to a full ROI segment (bounding box)
+
+cols_all = ['all_{:d}'.format(x) for x in range(len(lc_labels))]
+cols_GOSAT = ['gosat_{:d}'.format(x) for x in range(len(lc_labels))]
+
+df_diff = pd.DataFrame(index=pd.date_range('1/1/2010', '31/12/2016', freq='MS'),
+                       columns=['max_diff', 'min_diff',] + cols_all + cols_GOSAT)
+
+for year in range(2010, 2017):
+    for month in range(1, 13):
+
+        print(year, month)
+        
+        this_idx = np.where((gosat_h5['Year'][:] == year) &
+                            (gosat_h5['Month'][:] == month))[0]
+        
+        lcmax = lc_gosat[this_idx].argmax(axis=1)
+        GOSAT_lcs = lc_flags[np.searchsorted(lc_flags, lcmax)]
+
+        lc_un_ALL =  np.unique(lccs, return_counts=True)
+
+        lcsum = np.mean(lc_gosat[this_idx], axis=0) * 100
+
+        lc_percs_ALL = np.zeros_like(lcsum)
+        lc_percs_ALL[np.searchsorted(lc_flags, lc_un_ALL[0])] = 100 * lc_un_ALL[1] / len(lccs)
+        lc_sort_ALL = np.argsort(lc_percs_ALL)[::-1]
+
+        lc_un_GOSAT = np.unique(GOSAT_lcs, return_counts=True)
+        lc_sort_GOSAT = np.argsort(lc_un_GOSAT[1])[::-1]
+
+        this_diff = -(lc_percs_ALL[lc_sort_ALL] - lcsum[lc_sort_ALL])
+        which_idx = np.argmax(np.abs(this_diff))
+        max_diff = np.max(this_diff)
+
+        df_idx = ((df_diff.index.year == year) &
+                  (df_diff.index.month == month))
+
+        for x in range(len(lc_labels)):
+            df_diff.loc[df_idx, f'all_{x}'] = lc_percs_ALL[x]
+            df_diff.loc[df_idx, f'gosat_{x}'] = lcsum[x]
+        
+        df_diff.loc[df_idx, 'min_diff'] = np.min(this_diff)
+        df_diff.loc[df_idx, 'max_diff'] = np.max(this_diff)
+
+        print(which_idx, np.min(this_diff), np.max(this_diff), np.mean(np.abs(this_diff)))
+
+# Set this month to NaN's as we don't use it anyway
+df_diff.loc['2015-01-01'] = np.nan
+# Monthly deviation of LC coverage
+fig = plt.figure(figsize=(4, 2), dpi=300)
+
+for x in lc_sort_ALL[:3]:
+    (df_diff[f'gosat_{x}'] - df_diff[f'all_{x}']).plot(label=lc_labels[x])
+fig.legend(bbox_to_anchor=(1.45, 0.85), ncol=1, fontsize=7)
+#fig.subplots_adjust(right=1.25)
+fig.tight_layout()
+plt.ylabel("LC coverage difference [$\%$]")
+plt.xlabel("Year")
+plt.savefig('lc_diff_monthly.pdf', bbox_inches='tight')
+plt.close()
+        
 # Plot a map showing off the GOSAT sampling and the LC map
 
 # Make custom colormap for LC classes, accoring to the original ESA color code

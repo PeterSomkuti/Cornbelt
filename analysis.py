@@ -1,3 +1,4 @@
+import matplotlib
 from matplotlib import rcParams
 rcParams['font.family'] = 'serif'
 rcParams['font.serif'] = ['Times', 'Times New Roman']
