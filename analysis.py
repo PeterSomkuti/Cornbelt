@@ -36,6 +36,9 @@ min_date = '20100101'
 max_date = '20161231'
 anomaly_stat = 'median'
 
+problem = ['2013-04-01', '2014-02-01', '2014-03-01', '2014-04-01',
+           '2014-11-01', '2015-02-01', '2015-04-01', '2016-08-01']
+
 ###############################################################################
 ######### PREPPING DATA #######################################################
 
@@ -274,7 +277,14 @@ def ts_overview(plot_df, sif_list, aux_list,
         
         ax.plot(plot_df.loc[:, aux],
                 #color=aux_colors[i],
-                label=aux_label)
+                label=aux_label, zorder=5)
+        '''
+        for p in problem:
+            pl = np.where(plot_df.index == p)[0][0]
+            ax.scatter(plot_df.index[pl],
+                       plot_df.iloc[pl].loc[aux],
+                       s=3, color='r', zorder=10)
+        '''               
         
         if symm_lim:
             ax.set_ylim(-aux_lim, aux_lim)
@@ -342,8 +352,14 @@ for pol in ['_P', '_S', '']:
                           y1=dfa.loc[:, SL[f'abs_755{pol}']].min(axis=1),
                           y2=dfa.loc[:, SL[f'abs_755{pol}']].max(axis=1),
                           color='green', alpha=0.15)
+
+    anomaly_std = dfa.loc[:, SL[f'abs_755{pol}']].median(axis=1).std()
+    
     axarr[1].hlines([0], xmin=dfa.index[0], xmax=dfa.index[-1],
-                    color='grey', linewidth=1.0, linestyle='dashed')
+                    color='grey', linewidth=0.5, linestyle='solid')
+    axarr[1].hlines([-anomaly_std, anomaly_std], xmin=dfa.index[0], xmax=dfa.index[-1],
+                    color='green', linewidth=0.5, linestyle='dotted')
+    
     axarr[1].set_ylabel('SIF Anomaly\n[mW/m$^2$/sr/nm]')
 
     fig.align_ylabels()
@@ -358,7 +374,7 @@ for pol in ['_P', '_S', '']:
     plt.close('all')
 
 aux_list = ['gome2_sif',
-            'spei',
+            'GRACE',
             'trmm_precip',
             #######
             'myd13_evi',
@@ -366,13 +382,13 @@ aux_list = ['gome2_sif',
             'lai',
             #######
             'myd11_lst_day',
-            'sm_passive',
+            'sm_combined',
             'sm_active',
             #####
             'CASA_GEE', 'CASA_NEE', 'uoe-7.1b']
 
 aux_labels = ['GOME-2 SIF [mW/m$^2$/sr/nm]',
-              'SPEI',
+              'GRACE',
               'TRMM [mm/hr]',
               ####
               'EVI',
@@ -380,7 +396,7 @@ aux_labels = ['GOME-2 SIF [mW/m$^2$/sr/nm]',
               'LAI',
               ####
               'LST [K]',
-              'Passive SM [m$^3$/m$^3$]',
+              'Combined SM [m$^3$/m$^3$]',
               'Active SM [%]',
               ####
               'CASA GPP [gC/m$^2$/yr]',

@@ -114,7 +114,7 @@ LIANG PLEASE HELP!
 \subsection{GOSAT Sampling Bias}
 \label{sec:sampling_bias}
 
-As mentioned during the discussion on GOSAT SIF retrievals (Section~\ref{sec:GOSAT_SIF}), the FTS instrument, due to its pointing strategy/nature, causes potential sampling biases due to the pointing locations. While there is an inherent bias due to clouds, as GOSAT SIF retrievals can not be performed in the presence of thick clouds, the sampling strategy results in non-uniform selection of surfaces throughout the region of interest. Illustrated in Figure~\ref{fig:sampling}, the sampling density is shown for the entire time period from the beginning of $2010$ until the end of $2016$. 
+As mentioned during the discussion on GOSAT SIF retrievals (Section~\ref{sec:GOSAT_SIF}), the FTS instrument, due to its pointing strategy/nature, causes potential sampling biases due to the pointing locations. While there is an inherent bias due to clouds, as GOSAT SIF retrievals can not be performed in the presence of thick clouds, the sampling strategy results in non-uniform selection of surfaces throughout the region of interest (ROI). Illustrated in Figure~\ref{fig:sampling}, the sampling density is shown for the entire time period from the beginning of $2010$ until the end of $2016$. 
 
 \begin{figure}[htbp]
 \centering
@@ -134,8 +134,9 @@ The question arises, whether the sampling of the various surfaces of the chosen 
 
 Not surprising, more than $75\%$ of surfaces belong to either rainfed cropland or grassland types. The third most common surface type (deciduous tree cover) is mainly due to Ozark National Forest in Missouri, Superior National Forest as well as forests in northern Wisconsin. For the total period, GOSAT is well representing the overall composition of land cover classes of the region of interest. The largest differences are seen for flooded tree cover, where GOSAT is slightly over-repensenting ($+1.69\%$), and grassland, where GOSAT is under-representing ($-3.25\%$).
 
-Repeating the same analysis on a monthly basis, a different picture than Figure~\ref{fig:lc_coverage} can arise, as GOSAT's sampling is not only non-uniform geographically, but also changed over time. In Figure~\ref{fig:lc_diff_monthly}, the differences between GOSAT-seen and total ROI land cover class coverage for monthly aggregates is shown for the three most prevalent classes. We observe that differences can change somewhat drastically, and for certain months even reach $10\%$. The problematic months, in which the differences are fairly large for cropland and grassland LC types are $2013/04$, $2014/02$, $2014/03$, $2014/04$, $2014/11$, $2016/08$, $2015/02$ and $2015/04$.
+Repeating the same analysis on a monthly basis, a different picture than Figure~\ref{fig:lc_coverage} can arise, as GOSAT's sampling is not only non-uniform geographically, but also changed over time. In Figure~\ref{fig:lc_diff_monthly}, the differences between GOSAT-seen and total ROI land cover class coverage for monthly aggregates is shown for the three most prevalent classes. We observe that differences can change somewhat drastically, and for certain months even reach $10\%$. Months in which the differences are fairly large for cropland and grassland LC types are: $2013/04$, $2014/02$, $2014/03$, $2014/04$, $2014/11$, $2015/02$ and $2015/04$, $2016/08$. Due to the careful handling of the EO data set sampling, the difference in LC coverage should not have a significant impact on the further analysis and results. It is also important to note that while Figures~\ref{fig:lc_coverage} and \ref{fig:lc_diff_monthly} confirm that the LC classes are more or less well-represented, vegetation responses can vary geographically over the corn belt, even though they might share the same LC classification.
 
+ 
 \begin{figure}[htbp]
 \centering
 \includegraphics{../lc_diff_monthly.pdf}
@@ -143,10 +144,12 @@ Repeating the same analysis on a monthly basis, a different picture than Figure~
 \label{fig:lc_diff_monthly}
 \end{figure}
 
-
-
  
 \section{Results}
+
+\subsection{Time Series}
+
+The SIF retrievals are aggregated on a monthly basis, where the mean of all measurements inside the ROI for a given month are considered. As we have two different polarisations (P, S) and three different calibration procedures (seasonal, annual, spline-based), there are a total of six SIF time series. Figure~\ref{fig:sif_ts} shows this ensemble of SIF data, where the thick line is the median of all six time series, and the shaded area visualizes the minimum and maximum value of the given month to show the spread of the ROI-averaged SIF. It should be noted that the variability in the SIF time series stems mostly from the two different polarisations, rather than the calibration methodology. Months with less than $200$ measurements are dropped from both the visualization and the analysis, which affects only January $2015$, a month in which GOSAT was only partially operative due to instrumental issues.
 
 \begin{figure}[htbp]
 \centering
@@ -155,7 +158,44 @@ Repeating the same analysis on a monthly basis, a different picture than Figure~
 \label{fig:sif_ts}
 \end{figure}
 
+The anomalies in Figure~\ref{fig:sif_ts} (bottom) are calculated as the difference between the current month and the median of all of the same months over the seven-year period. While the straight time series does not immediately reveal any striking features, the anomalies show several important ones. First, it is clear that over this relatively short period of seven years, the number of anomalous months within that period somewhat large: counting the number of months where the SIF signal exceeds the standard deviation of the all anomalies (dotted green lines in Fig.~\ref{fig:sif_ts}), one arrives at $22$ (or $26\%$) anomalous months. We conclude that this short time period does not have a strong baseline, as every year has at least two anomalous months. [REFERENCE WOLF LIU AND OTHERS AND POINT OUT THAT THEY USED A SIMPLE BASELINE] It is therefore imperative to look at every anomaly within the context of other climatological and agricultural drivers.
 
+In chronological order, the big anomalies can be easily identified and related to known meteorological events. Starting in 2010, we see the effects of the rapid El Ni\~no-La Ni\~na transition, which brought excessive rain to the corn belt in the summer months (Fig.~\ref{fig:anomalies_0} bottom row) and drove plant growth.
+
+In $2011$, we see a negative anomaly for spring, despite average precipitation and temperatures for that season. The reason for the negative anomaly is hinted at by the positive GRACE anomaly for $2011$ (Fig.~\ref{fig:anomalies_0} middle row). Large amounts of melting snow in the northern corn belt, as well as high precipitation in the south eastern corner (Missouri) have caused massive flooding of the Mississippi and Missouri rivers. As most parts of the ROI have not seen any increased rainfall, the anomaly plot in Figure~\ref{fig:anomalies_0} (bottom) does not show any significant outlier. The flooded areas, however, are visible as a positive anomaly in the GRACE data. The flooding has not only delayed planting progress, but also 
+
+The two anomalies in $2012$ are the most well-known and most-studied ones. In short, a warm winter and warm spring (see LST anomalies in Fig.~\ref{fig:anomalies_2} top) caused early and fast vegetation growth. In the following summer, however, anomalously low precipitation (Fig.~\ref{fig:anomalies_0} bottom) was responsible for drought conditions. As a consequence of the early spring onset due to warm temperatures, the plants used up soil water reserves quicker and depleted the soil of moisture, thus exacerbating the drought even further. This $2012$ drought was one of the most severe droughts in recorded history, with conditions comparable to the $1930$'s dustbowl era. The drought conditions are seen equally strongly in the soil moisture (Fig.~\ref{fig:anomalies_2} middle and bottom) anomalies [WHY IS PASSIVE NOT AS NICE HERE?], as well as the GRACE anomalies (Fig.~\ref{fig:anomalies_0} middle). 
+
+In $2013$ and $2014$, we again see a negative anomaly for spring and early summer. Despite the anomalies looking similar, they can be explained differently. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../anomalies_755_abs_0_median.pdf}
+\caption{default}
+\label{fig:anomalies_0}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../anomalies_755_abs_2_median.pdf}
+\caption{default}
+\label{fig:anomalies_2}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../anomalies_755_abs_1_median.pdf}
+\caption{default}
+\label{fig:anomalies_1}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../anomalies_755_abs_3_median.pdf}
+\caption{default}
+\label{fig:anomalies_3}
+\end{figure}
 
 \section*{}
 \bibliography{mybibfile}
