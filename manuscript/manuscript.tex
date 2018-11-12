@@ -1,4 +1,4 @@
-\documentclass[preprint, a4paper, 10pt, times]{elsarticle}
+\documentclass[review, a4paper, 10pt, times]{elsarticle}
 
 \usepackage{lineno, hyperref}
 
@@ -46,11 +46,22 @@
 
 %% Group authors per affiliation:
 \author[uol,nceo]{Peter Somkuti\corref{cor1}\fnref{fn1}}
-\ead{ps345@le.ac.uk}
+\ead{psomkuti@colostate.edu}
+\author[uol,nceo]{Hartmut B\"osch}
+\author[uoe,nceo]{Paul Palmer}
+\author[uoe,nceo]{Liang Feng}
+\author[uol,nceo]{Robert Parker}
+\author[nceo]{Tristan Quaife}
+
+
+
+
+
 \cortext[cor1]{Corresponding author, now at Colorado State University}
 \fntext[fn1]{This is the specimen author footnote.}
 \address[uol]{University of Leicester, Department of Physics of Astronomy, Leicester, UK}
 \address[nceo]{National Centre for Earth Observation, University of Leicester, Leicester, UK}
+\address[uoe]{University of Edinburgh, Edinburgh, UK}
 
 \begin{abstract}
 This template helps you to create a properly formatted \LaTeX\ manuscript.
@@ -61,7 +72,7 @@ This template helps you to create a properly formatted \LaTeX\ manuscript.
 
 \section{Introduction}
 
-Talk about corn belt, SIF, and other studies as well as their shortcomings. Mention especially the baseline problem.
+Talk about Corn Belt, SIF, and other studies as well as their shortcomings. Mention especially the baseline problem.
 
 \section{Materials \& Methods}
 \subsection{Solar-Induced Fluorescence from GOSAT}
@@ -134,7 +145,7 @@ The question arises, whether the sampling of the various surfaces of the chosen 
 
 Not surprising, more than $75\%$ of surfaces belong to either rainfed cropland or grassland types. The third most common surface type (deciduous tree cover) is mainly due to Ozark National Forest in Missouri, Superior National Forest as well as forests in northern Wisconsin. For the total period, GOSAT is well representing the overall composition of land cover classes of the region of interest. The largest differences are seen for flooded tree cover, where GOSAT is slightly over-repensenting ($+1.69\%$), and grassland, where GOSAT is under-representing ($-3.25\%$).
 
-Repeating the same analysis on a monthly basis, a different picture than Figure~\ref{fig:lc_coverage} can arise, as GOSAT's sampling is not only non-uniform geographically, but also changed over time. In Figure~\ref{fig:lc_diff_monthly}, the differences between GOSAT-seen and total ROI land cover class coverage for monthly aggregates is shown for the three most prevalent classes. We observe that differences can change somewhat drastically, and for certain months even reach $10\%$. Months in which the differences are fairly large for cropland and grassland LC types are: $2013/04$, $2014/02$, $2014/03$, $2014/04$, $2014/11$, $2015/02$ and $2015/04$, $2016/08$. Due to the careful handling of the EO data set sampling, the difference in LC coverage should not have a significant impact on the further analysis and results. It is also important to note that while Figures~\ref{fig:lc_coverage} and \ref{fig:lc_diff_monthly} confirm that the LC classes are more or less well-represented, vegetation responses can vary geographically over the corn belt, even though they might share the same LC classification.
+Repeating the same analysis on a monthly basis, a different picture than Figure~\ref{fig:lc_coverage} can arise, as GOSAT's sampling is not only non-uniform geographically, but also changed over time. In Figure~\ref{fig:lc_diff_monthly}, the differences between GOSAT-seen and total ROI land cover class coverage for monthly aggregates is shown for the three most prevalent classes. We observe that differences can change somewhat drastically, and for certain months even reach $10\%$. Months in which the differences are fairly large for cropland and grassland LC types are: $2013/04$, $2014/02$, $2014/03$, $2014/04$, $2014/11$, $2015/02$ and $2015/04$, $2016/08$. Due to the careful handling of the EO data set sampling, the difference in LC coverage should not have a significant impact on the further analysis and results. It is also important to note that while Figures~\ref{fig:lc_coverage} and \ref{fig:lc_diff_monthly} confirm that the LC classes are more or less well-represented, vegetation responses can vary geographically over the Corn Belt, even though they might share the same LC classification.
 
  
 \begin{figure}[htbp]
@@ -148,6 +159,7 @@ Repeating the same analysis on a monthly basis, a different picture than Figure~
 \section{Results}
 
 \subsection{Time Series}
+\label{sec:SIF_TS}
 
 The SIF retrievals are aggregated on a monthly basis, where the mean of all measurements inside the ROI for a given month are considered. As we have two different polarisations (P, S) and three different calibration procedures (seasonal, annual, spline-based), there are a total of six SIF time series. Figure~\ref{fig:sif_ts} shows this ensemble of SIF data, where the thick line is the median of all six time series, and the shaded area visualizes the minimum and maximum value of the given month to show the spread of the ROI-averaged SIF. It should be noted that the variability in the SIF time series stems mostly from the two different polarisations, rather than the calibration methodology. Months with less than $200$ measurements are dropped from both the visualization and the analysis, which affects only January $2015$, a month in which GOSAT was only partially operative due to instrumental issues.
 
@@ -158,15 +170,18 @@ The SIF retrievals are aggregated on a monthly basis, where the mean of all meas
 \label{fig:sif_ts}
 \end{figure}
 
-The anomalies in Figure~\ref{fig:sif_ts} (bottom) are calculated as the difference between the current month and the median of all of the same months over the seven-year period. While the straight time series does not immediately reveal any striking features, the anomalies show several important ones. First, it is clear that over this relatively short period of seven years, the number of anomalous months within that period somewhat large: counting the number of months where the SIF signal exceeds the standard deviation of the all anomalies (dotted green lines in Fig.~\ref{fig:sif_ts}), one arrives at $22$ (or $26\%$) anomalous months. We conclude that this short time period does not have a strong baseline, as every year has at least two anomalous months. [REFERENCE WOLF LIU AND OTHERS AND POINT OUT THAT THEY USED A SIMPLE BASELINE] It is therefore imperative to look at every anomaly within the context of other climatological and agricultural drivers.
+The anomalies in Figure~\ref{fig:sif_ts} (bottom) are calculated as the difference between the current month and the median of all of the same months over the seven-year period. While the straight time series does not immediately reveal any striking features, the anomalies show several important ones. First, it is clear that over this relatively short period of seven years, the number of anomalous months within that period somewhat large: counting the number of months where the SIF signal exceeds the standard deviation of all anomalies (dotted green lines in Fig.~\ref{fig:sif_ts}, ), one arrives at $22$ (or $26\%$) anomalous months. We conclude that this short time period does not have a strong baseline, as every year has at least two anomalous months. [REFERENCE WOLF LIU AND OTHERS AND POINT OUT THAT THEY USED A SIMPLE BASELINE] It is therefore imperative to look at every anomaly within the context of other climatological and agricultural drivers.In chronological order, the big anomalies can be easily identified and related to known meteorological events. 
 
-In chronological order, the big anomalies can be easily identified and related to known meteorological events. Starting in 2010, we see the effects of the rapid El Ni\~no-La Ni\~na transition, which brought excessive rain to the corn belt in the summer months (Fig.~\ref{fig:anomalies_0} bottom row) and drove plant growth.
+Starting in $2010$, we see the effects of the rapid El Ni\~no-La Ni\~na transition, which brought excessive rain to the Corn Belt in the summer months (Fig.~\ref{fig:anomalies_0} bottom row) and drove plant growth.
 
-In $2011$, we see a negative anomaly for spring, despite average precipitation and temperatures for that season. The reason for the negative anomaly is hinted at by the positive GRACE anomaly for $2011$ (Fig.~\ref{fig:anomalies_0} middle row). Large amounts of melting snow in the northern corn belt, as well as high precipitation in the south eastern corner (Missouri) have caused massive flooding of the Mississippi and Missouri rivers. As most parts of the ROI have not seen any increased rainfall, the anomaly plot in Figure~\ref{fig:anomalies_0} (bottom) does not show any significant outlier. The flooded areas, however, are visible as a positive anomaly in the GRACE data. The flooding has not only delayed planting progress, but also 
+In $2011$, we see a negative anomaly for spring, despite average precipitation and temperatures for that season. The reason for the negative anomaly is hinted at by the positive GRACE anomaly for $2011$ (Fig.~\ref{fig:anomalies_0} middle row). Large amounts of melting snow in the northern Corn Belt, as well as high precipitation in the south eastern corner (Missouri) have caused massive flooding of the Mississippi and Missouri rivers. As most parts of the ROI have not seen any increased rainfall, the anomaly plot in Figure~\ref{fig:anomalies_0} (bottom) does not show any significant outlier. The flooded areas, however, are visible as a positive anomaly in the GRACE data. The flooding has not only delayed planting progress, but also SOMETHING
 
 The two anomalies in $2012$ are the most well-known and most-studied ones. In short, a warm winter and warm spring (see LST anomalies in Fig.~\ref{fig:anomalies_2} top) caused early and fast vegetation growth. In the following summer, however, anomalously low precipitation (Fig.~\ref{fig:anomalies_0} bottom) was responsible for drought conditions. As a consequence of the early spring onset due to warm temperatures, the plants used up soil water reserves quicker and depleted the soil of moisture, thus exacerbating the drought even further. This $2012$ drought was one of the most severe droughts in recorded history, with conditions comparable to the $1930$'s dustbowl era. The drought conditions are seen equally strongly in the soil moisture (Fig.~\ref{fig:anomalies_2} middle and bottom) anomalies [WHY IS PASSIVE NOT AS NICE HERE?], as well as the GRACE anomalies (Fig.~\ref{fig:anomalies_0} middle). 
 
-In $2013$ and $2014$, we again see a negative anomaly for spring and early summer. Despite the anomalies looking similar, they can be explained differently. 
+In $2013$ and $2014$, we again see a negative anomaly for spring and early summer. For these two years, the anomalies have similar causes. In the spring months, high precipitation and cool temperatures delayed the planting process - corn seed planting is generally done on warm and dry days - as well as caused slow maturing of crops. [POINT TO USDA GRAPHS].
+
+The following two years exhibit positive SIF anomalies. In $2015$, near-ideal temperatures and favourable rainfall have led to good growing an maturing conditions for corn and soybeans, despite the rainfall distribution being suboptimal - the southern and eastern regions of the Corn Belt experienced more excessive rain. $2016$ proved to be an even better year for crop production than $2015$, and this is reflected in the SIF anomaly. After an intense El Ni\~no in $2015$, the quick transition to a weak La Ni\~na, and a fairly wet summer has provided ideal conditions for crops.
+
 
 \begin{figure}[htbp]
 \centering
@@ -196,6 +211,21 @@ In $2013$ and $2014$, we again see a negative anomaly for spring and early summe
 \caption{default}
 \label{fig:anomalies_3}
 \end{figure}
+
+\section{Crop planting and yield}
+
+The US Corn Belt is a very specific type of biome. As recently investigated by \citet{Alter2017}, it even generates its own climate. Despite the ROI being almost $1800 \cdot 10^9\;\mathrm{m}^2$ ($\approx 440$ million acres) in area, almost half of it is managed cropland. Meteorological conditions are thus not the only factor in determining the onset and productivity of one given season. It was pointed out in Section~\ref{sec:SIF_TS} that certain for years, the rainfall amount in springtime have caused delays in the planting of crops. To show that SIF indeed captures the delays in planting, we compare against the USDA crop progress reports. In these reports, the percentage of acreage planted is recorded based on farmer surveys. We translate these state-wide and weekly data for the whole ROI by multiplying with the total planted area for that given year and state in order to obtain an effective "planted area". We compare this number for every year against the integrated SIF radiances from Feburary onwards to June.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{../corn_soy_planted_sif.pdf}
+\caption{default}
+\label{fig:corn_soy_planted_sif}
+\end{figure}
+
+The result for both corn and soybeans is shown in Figure~\ref{fig:corn_soy_planted_sif}. It shows that the time-integrated SIF radiances correspond very well to the crop planting progress of that given year at the first week of May (week 18). [TODO: If I change the months / weeks slightly - the result improves a bit; justification?]
+
+
 
 \section*{}
 \bibliography{mybibfile}

@@ -106,7 +106,7 @@ plt.yticks(np.arange(len(lc_percs_ALL)),
 
 plt.ylim(-0.5, 5.5)
 plt.xlabel('Coverage [%]')
-plt.legend()
+plt.legend(fontsize=8)
 plt.savefig('lc_coverage.pdf', bbox_inches='tight')
 plt.close()
 

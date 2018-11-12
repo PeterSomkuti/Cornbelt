@@ -5,10 +5,13 @@ import palettable as pt
 
 
 ##### Make panel plots for various progress reports using a generic function
-def make_panels(df, plotkey, filename, query='', grid=(3,3)):
+def make_panels(df, plotkey, filename, days=True, query='', grid=(3,3)):
 
     dfp = df.query(query)
-    dfp.index = pd.to_datetime(dfp['Week Ending'])
+    if len(dfp['Week Ending'].dropna()) != 0:
+        dfp.index = pd.to_datetime(dfp['Week Ending'])
+    else:
+        dfp.index = pd.to_datetime(dfp['Year'], format='%Y')
 
     fig, axarr = plt.subplots(grid[0], grid[1], figsize=(5,5), dpi=200)
     axarr = axarr.flatten()
@@ -21,8 +24,11 @@ def make_panels(df, plotkey, filename, query='', grid=(3,3)):
             
         ax.set_title(' '.join([y.capitalize() for y in state.split()]))
         for year, df_year in df_state.groupby(df_state.index.year):
-            p = ax.plot(df_year.index.dayofyear, df_year[plotkey])
-            
+            if days:
+                p = ax.plot(df_year.index.dayofyear, df_year[plotkey])
+            else:
+                p = ax.plot(df_year.index.year, df_year[plotkey])
+                
             if i==0:
                 linelist.append(p[0])
                 labellist.append(year)
@@ -39,9 +45,13 @@ df_area_soy = pd.read_csv('area_planted_all_soy.csv', sep=',', thousands=',')
 df_area_wheat = pd.read_csv('area_planted_all_wheat.csv', sep=',', thousands=',')
 
 # Progress
-df_pp_corn = pd.read_csv('progress_corn2.csv', sep=',', thousands=',')
+df_pp_corn = pd.read_csv('progress_corn.csv', sep=',', thousands=',')
 df_pp_soy = pd.read_csv('progress_soy.csv', sep=',', thousands=',')
 df_pp_wheat =  pd.read_csv('progress_wheat.csv', sep=',', thousands=',')
+
+# Production and Yield
+df_production = pd.read_csv('corn_soy_production.csv', sep=',', thousands=',')
+df_yield = pd.read_csv('corn_soy_yield.csv', sep=',', thousands=',')
 
 period = "YEAR"
 start_year = 2010
@@ -114,7 +124,29 @@ plt.savefig('area_planted.pdf')
 plt.close()
 
 
+fig, axarr = plt.subplots(1, 2, dpi=200, figsize=(5,4))
 
+for i, comm in enumerate(['CORN', 'SOYBEANS']):
+
+    llist = []
+    lablist = []
+    ax = axarr[i]
+    ax.set_prop_cycle('color', cp)
+    query = f'(Period == "YEAR") & (Commodity == "{comm}") & (Year > 2009) & (Year < 2017)'
+
+    for state, df_state in df_yield.query(query).groupby('State'):
+        llist.append(ax.plot(df_state['Year'], df_state['Value'])[0])
+        lablist.append(state)
+        
+fig.legend(llist, lablist, 'lower center', ncol=3,
+           bbox_to_anchor=(0.5, 0.05),
+           fontsize=8,
+           labelspacing=0.25)
+
+#fig.subplots_adjust(bottom=0.15)
+fig.tight_layout()
+fig.subplots_adjust(bottom=0.2)
+plt.savefig('crop_yield.pdf', bbox_inches='tight')
 
 make_panels(df_pp_corn[df_pp_corn['Data Item'] == "CORN - PROGRESS, MEASURED IN PCT PLANTED"],
             'Value', 'corn_progress.pdf',
