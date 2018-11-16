@@ -492,7 +492,7 @@ dfp_soy = df_progress_soy[df_progress_soy['Data Item'] ==
 
 
 
-
+'''
 # Make 2-D plot of SIF integration months vs CROP WEEK
 corr_max = 0.0
 for sif_integral in range(2,13):
@@ -530,134 +530,225 @@ for sif_integral in range(2,13):
             pass
             # print(sif_integral, crop_week, 'failed')
 
+'''
 
 sif_integral = [5, 5] #[6, 7]
 crop_week = [18, 18]
 plottitle = ['Corn', 'Soybeans']
 markerlist = ['o', '^', 's', '8', '<', 'p', 'D']
 
-fig, axarr  = plt.subplots(1, 2, figsize=(4.5, 2.5), dpi=300)
-for i, (dfp, df_area) in enumerate([(dfp_corn.copy(), df_area_corn.copy()),
-                                    (dfp_soy.copy(), df_area_soy.copy())]):
+for x_key in [SL['abs_755'], 'myd13_evi', 'myd13_ndvi', 'fvc', 'lai']:
+    fig, axarr  = plt.subplots(1, 2, figsize=(4.5, 2.5), dpi=300)
 
-    ax = axarr[i]
-    
-    xdata = []
-    ydata = []
-    lines = []
-    for j, year in enumerate(range(2010, 2017)):
+    print(x_key)
+    print(type(x_key))
+    for i, (dfp, df_area) in enumerate([(dfp_corn.copy(), df_area_corn.copy()),
+                                        (dfp_soy.copy(), df_area_soy.copy())]):
+        
+        ax = axarr[i]
+        
+        xdata = []
+        ydata = []
+        lines = []
+        
+        for j, year in enumerate(range(2010, 2017)):
 
-        sif_data = dfs.loc[dfs.index.year == year, SL['abs_755']]
-        sif_mean = sif_data.mean(axis=1)
-        sif_std = sif_data.std(axis=1)
+            sif_data = dfs.loc[dfs.index.year == year, x_key]
+            
+            if type(x_key) == list:
+                sif_mean = sif_data.mean(axis=1)
+                sif_std = sif_data.std(axis=1)
+            else:
+                sif_mean = sif_data.copy()
+                sif_std = 0 * sif_mean
 
-        for state in np.unique(dfp['State']):
-            this_area = df_area.query(f'Year == {year} & State == "{state}" & Period == "YEAR"')
-            dfp.loc[(dfp['Year'] == year) & (dfp['State'] == state), 'Value'] *= this_area.Value.values            
+            for state in np.unique(dfp['State']):
+                this_area = df_area.query(f'Year == {year} & State == "{state}" & Period == "YEAR"')
+                dfp.loc[(dfp['Year'] == year) & (dfp['State'] == state), 'Value'] *= this_area.Value.values            
         
 
-        # We are deviding by 1e8 because million * percent
-        crop_data = dfp[dfp.index.year == year]['Value'].resample('W').sum() / 1e8
-        #crop_std = dfp[dfp.index.year == year]['Value'].resample('W').std() * 0.0
+            # We are deviding by 1e8 because million * percent
+            crop_data = dfp[dfp.index.year == year]['Value'].resample('W').sum() / 1e8
+            #crop_std = dfp[dfp.index.year == year]['Value'].resample('W').std() * 0.0
     
-        crop_idx = np.where(crop_data.index.week == crop_week[i])[0][0]
+            crop_idx = np.where(crop_data.index.week == crop_week[i])[0]
         
-        xdata.append(sif_mean[1:sif_integral[i]].sum())
-        ydata.append(crop_data[crop_idx])
+            xdata.append(sif_mean[1:sif_integral[i]].sum())
+            if len(crop_idx) == 0:
+                ydata.append(0)
+            else:
+                ydata.append(crop_data[crop_idx[0]])
     
-        l1, l2, l3 = ax.errorbar(x=xdata[-1],
-                                 y=ydata[-1],
-                                 xerr=np.sqrt(np.sum(sif_std[2:sif_integral[i]]**2)),
-                                 #yerr=crop_std[crop_idx],
-                                 fmt=markerlist[j], label=year,
-                                 markersize=3,
-                                 capsize=1.0,
-                                 elinewidth=1.0)
+            l1, l2, l3 = ax.errorbar(x=xdata[-1],
+                                     y=ydata[-1],
+                                     xerr=np.sqrt(np.sum(sif_std[2:sif_integral[i]]**2)),
+                                     #yerr=crop_std[crop_idx],
+                                     fmt=markerlist[j], label=year,
+                                     markersize=3,
+                                     capsize=1.0,
+                                     elinewidth=1.0)
 
-        lines.append(l1)
+            lines.append(l1)
 
-    ax.set_title(plottitle[i], fontsize=8)
-    int_month = ['Jan', 'Feb', 'Mar', 'Apr',
-                 'May', 'Jun', 'Jul', 'Aug',
-                 'Sep', 'Oct', 'Nov', 'Dec'][sif_integral[i]]
-    ax.set_xlabel(f'Integrated SIF (Feb-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
-    
-    if i == 0:
-        ax.set_ylabel('Area Planted by Week 18\n[Million Acres]')
-    else:
-        ax.yaxis.tick_right()
-    lreg = sps.linregress(xdata, ydata)
-    xplot = np.array([0.9 * min(xdata), 1.1 * max(xdata)])
-    ax.plot(xplot, np.array(xplot) * lreg[0] + lreg[1],
-            '--', linewidth=0.75, linestyle='dashed')
-            #label="r = {:0.2f}".format(lreg[2]))
-    #ax.legend(ncol=2, fontsize=8)
+        ax.set_title(plottitle[i], fontsize=8)
+        int_month = ['Jan', 'Feb', 'Mar', 'Apr',
+                     'May', 'Jun', 'Jul', 'Aug',
+                     'Sep', 'Oct', 'Nov', 'Dec'][sif_integral[i]]
+        
+        if type(x_key) == list:
+            ax.set_xlabel(f'Integrated SIF (Feb-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+        else:
+            ax.set_xlabel(f'Integrated {x_key} (Feb-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+           
+        if i == 0:
+            ax.set_ylabel('Area Planted by Week 18\n[Million Acres]')
+        else:
+            ax.yaxis.tick_right()
+            
+        lreg = sps.linregress(xdata, ydata)
+        xplot = np.array([0.9 * min(xdata), 1.1 * max(xdata)])
+        ax.plot(xplot, np.array(xplot) * lreg[0] + lreg[1],
+                '--', linewidth=0.75, linestyle='dashed')
+        #label="r = {:0.2f}".format(lreg[2]))
+        #ax.legend(ncol=2, fontsize=8)
 
-    ax.text(0.95, 0.05, "r = {:0.2f}, p = {:0.3f}".format(lreg[2], lreg[3]),
-            transform=ax.transAxes, ha='right', va='bottom',
-            fontsize=8)
+        ax.text(0.95, 0.05, "r = {:0.2f}, p = {:0.3f}".format(lreg[2], lreg[3]),
+                transform=ax.transAxes, ha='right', va='bottom',
+                fontsize=8)
                 # xerr=sif_std[:4].sum())
-ax.legend(ncol=1, fontsize=7, loc='upper left')
-#fig.legend(lines, np.arange(2010, 2017), loc='center right',
-#           fontsize=7, bbox_to_anchor=(1.2, 0.5))
-fig.tight_layout()
-plt.savefig('corn_soy_planted_sif.pdf', bbox_inches='tight')
+        ax.legend(ncol=1, fontsize=7, loc='upper left')
+        #fig.legend(lines, np.arange(2010, 2017), loc='center right',
+        #           fontsize=7, bbox_to_anchor=(1.2, 0.5))
+    fig.tight_layout()
 
+    if type(x_key) == list:
+        fname = 'corn_soy_planted_sif.pdf'
+    else:
+        fname = f'corn_soy_planted_{x_key}.pdf'
+    plt.savefig(fname, bbox_inches='tight')
+    plt.close()
 
 
 
 
 # Crop yields and production
+for x_key in [SL['abs_755'], 'myd13_evi', 'myd13_ndvi', 'lai', 'fvc']:
+    fig, axarr  = plt.subplots(1, 2, figsize=(4.5, 2.5), dpi=300)
+    for i, crop in enumerate(['CORN', 'SOYBEANS']):
 
-fig, axarr  = plt.subplots(1, 2, figsize=(4.5, 2.5))
-for i, crop in enumerate(['CORN', 'SOYBEANS']):
-
-    dfp = df_yield.query(f'Commodity == "{crop}" & Period == "YEAR"')
+        dfp = df_yield.query(f'Commodity == "{crop}" & Period == "YEAR"')
     
-    ax = axarr[i]
+        ax = axarr[i]
+    
+        xdata = []
+        ydata = []
+        lines = []
+        for j, year in enumerate(range(2010, 2017)):
+
+            
+            sif_data = dfs.loc[dfs.index.year == year, x_key]
+            if type(x_key) == list:
+                sif_mean = sif_data.mean(axis=1)
+                sif_std = sif_data.std(axis=1)
+            else:
+                sif_mean = sif_data.copy()
+                sif_std = sif_data * 0
+
+
+            # We are deviding by 1e8 because million * percent
+            crop_data = dfp[dfp['Year'] == year]['Value'].mean()
+            crop_std = dfp[dfp['Year'] == year]['Value'].std()
+    
+            #crop_idx = np.where(crop_data.index.week == crop_week[i])[0][0]
+        
+            xdata.append(sif_mean[5:10].sum())
+            ydata.append(crop_data)
+
+            ax.errorbar(x=xdata[-1],
+                        y=ydata[-1],
+                        xerr=np.sqrt(np.sum(sif_std**2)),
+                        yerr=crop_std,
+                        fmt=markerlist[j], label=year,
+                        markersize=3,
+                        capsize=1.0,
+                        elinewidth=1.0)
+
+    
+        if i == 0:
+            ax.set_ylabel('Mean crop yield \n[Bushels / acre]')
+        else:
+            ax.yaxis.tick_right()
+        
+        lreg = sps.linregress(xdata, ydata)
+        xplot = np.array([0.9 * min(xdata), 1.1 * max(xdata)])
+        ax.plot(xplot, np.array(xplot) * lreg[0] + lreg[1],
+                '--', linewidth=0.75, linestyle='dashed')
+    
+        ax.text(0.95, 0.05, "r = {:0.2f}, p = {:0.3f}".format(lreg[2], lreg[3]),
+                transform=ax.transAxes, ha='right', va='bottom',
+                fontsize=8)
+        ax.text(0.95, 0.15, "y = {:0.2f} + {:0.2f} ({:0.2f}) x".format(lreg[1], lreg[0], lreg[4]),
+                transform=ax.transAxes, ha='right', va='bottom',
+                fontsize=8)
+        
+        if type(x_key) == list:
+            ax.set_xlabel(f'Integrated SIF (Feb-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+        else:
+            ax.set_xlabel(f'Integrated {x_key} (Feb-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+        
+        if i == 1:
+            ax.legend(fontsize=8)
+        print(sps.linregress(xdata, ydata))
+
+    fig.tight_layout()
+
+    if type(x_key) == list:
+        fname = 'corn_soy_yield_sif.pdf'
+    else:
+        fname = f'corn_soy_yield_{x_key}.pdf'
+    plt.savefig(fname, bbox_inches='tight')
+
+
+
+fig, axarr  = plt.subplots(1, 1, figsize=(4.5, 2.5), dpi=300)
+for i, crop in enumerate(['CORN']): #, 'SOYBEANS']):
+
+    dfy = df_yield.query(f'Commodity == "{crop}" & Period == "YEAR"')
+    dfp = dfp_corn.copy()
+    df_area = df_area_corn.copy()
+    ax = axarr
     
     xdata = []
     ydata = []
     lines = []
     for j, year in enumerate(range(2010, 2017)):
 
-        sif_data = dfs.loc[dfs.index.year == year, SL['abs_755']]
-        sif_mean = sif_data.mean(axis=1)
-        sif_std = sif_data.std(axis=1)
 
+        for state in np.unique(dfp['State']):
+            this_area = df_area.query(f'Year == {year} & State == "{state}" & Period == "YEAR"')
+            dfp.loc[(dfp['Year'] == year) & (dfp['State'] == state), 'Value'] *= this_area.Value.values            
+
+        
         # We are deviding by 1e8 because million * percent
-        crop_data = dfp[dfp['Year'] == year]['Value'].mean()
-        crop_std = dfp[dfp['Year'] == year]['Value'].std()
-    
+        crop_data = dfy[dfy['Year'] == year]['Value'].mean()
+        crop_std = dfy[dfy['Year'] == year]['Value'].std()
+
+        crop_planted = dfp[dfp.index.year == year]['Value'].resample('W').sum() / 1e8
+        crop_idx = np.where(crop_planted.index.week == crop_week[0])[0]
+
         #crop_idx = np.where(crop_data.index.week == crop_week[i])[0][0]
         
-        xdata.append(sif_mean.sum())
+        xdata.append(crop_planted[crop_idx].values[0])
         ydata.append(crop_data)
 
         ax.errorbar(x=xdata[-1],
                     y=ydata[-1],
-                    xerr=np.sqrt(np.sum(sif_std**2)),
+                    #xerr=np.sqrt(np.sum(sif_std**2)),
                     yerr=crop_std,
                     fmt=markerlist[j], label=year,
                     markersize=3,
                     capsize=1.0,
                     elinewidth=1.0)
 
-    
-    if i == 0:
-        ax.set_ylabel('Mean crop yield \n[Bushels / acre]')
-    else:
-        ax.yaxis.tick_right()
-        
-    lreg = sps.linregress(xdata, ydata)
-    xplot = np.array([0.9 * min(xdata), 1.1 * max(xdata)])
-    ax.plot(xplot, np.array(xplot) * lreg[0] + lreg[1],
-            '--', linewidth=0.75, linestyle='dashed')
-    
-    ax.text(0.95, 0.05, "r = {:0.2f}, p = {:0.3f}".format(lreg[2], lreg[3]),
-            transform=ax.transAxes, ha='right', va='bottom',
-            fontsize=8)
-        
-    if i == 1:
-        ax.legend(fontsize=8)
-    print(sps.linregress(xdata, ydata))
+plt.legend()
+plt.savefig('planted_vs_yield.pdf', bbox_inches='tight')

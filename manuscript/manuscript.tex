@@ -1,4 +1,4 @@
-\documentclass[review, a4paper, 10pt, times]{elsarticle}
+\documentclass[preprint, a4paper, 10pt, times]{elsarticle}
 
 \usepackage{lineno, hyperref}
 
@@ -219,13 +219,29 @@ The US Corn Belt is a very specific type of biome. As recently investigated by \
 \begin{figure}[htbp]
 \centering
 \includegraphics{../corn_soy_planted_sif.pdf}
-\caption{default}
+\caption{Crop planting progess Feb-June.}
 \label{fig:corn_soy_planted_sif}
 \end{figure}
 
 The result for both corn and soybeans is shown in Figure~\ref{fig:corn_soy_planted_sif}. It shows that the time-integrated SIF radiances correspond very well to the crop planting progress of that given year at the first week of May (week 18). [TODO: If I change the months / weeks slightly - the result improves a bit; justification?]
 
+The SIF radiances do not only reflect the crop status during the growing season. Also the total corn and soybean yield for the entire year has an apparent linear relationship with the integrated SIF radiances from June until October (harvest), as can be seen in Figure~\ref{fig:corn_soy_yield_sif}.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics{../corn_soy_yield_sif.pdf}
+\caption{Annual crop yield Jun-Oct}
+\label{fig:corn_soy_yield_sif}
+\end{figure}
+
+\subsection{The big TODO list}
+
+\begin{itemize}
+\item Figure 9 and 10 are obviously the most interesting one's, right? Do I want to work out more details on those regressions? Weighted linear regression for the Figure 10?
+\item Do I want/need to show that SIF is better than NDVI/EVI/fluxes/.... ?
+\item My SIF integration periods for Fig 9 and 10 are not arbitrary, but do I need to show robustness against changing the month slightly?
+\item Figures 5 through 8 seem excessive - do I want to take some out?
+\end{itemize}
 
 \section*{}
 \bibliography{mybibfile}
