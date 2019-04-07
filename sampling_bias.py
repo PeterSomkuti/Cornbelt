@@ -2,6 +2,8 @@
 #matplotlib.use('agg')
 
 from matplotlib import rcParams
+import matplotlib.patheffects as PathEffects
+
 
 rcParams['font.family'] = 'serif'
 rcParams['font.serif'] = ['Times', 'Times New Roman']
@@ -161,15 +163,19 @@ for year in range(2010, 2017):
 # Set this month to NaN's as we don't use it anyway
 df_diff.loc['2015-01-01'] = np.nan
 # Monthly deviation of LC coverage
-fig = plt.figure(figsize=(4, 2), dpi=300)
+fig = plt.figure(figsize=(3, 2), dpi=300)
 
 for x in lc_sort_ALL[:3]:
     (df_diff[f'gosat_{x}'] - df_diff[f'all_{x}']).plot(label=lc_labels[x])
-fig.legend(bbox_to_anchor=(1.45, 0.85), ncol=1, fontsize=7)
+fig.legend(bbox_to_anchor=(1.65, 0.85), ncol=1, fontsize=7)
 #fig.subplots_adjust(right=1.25)
 fig.tight_layout()
 plt.ylabel("LC coverage difference [$\%$]")
 plt.xlabel("Year")
+xmin, xmax = plt.gca().get_xlim()
+plt.hlines([0], xmin=xmin, xmax=xmax, linestyle='dashed',
+           color='grey', lw=0.5)
+plt.xlim(xmin, xmax)
 plt.savefig('lc_diff_monthly.pdf', bbox_inches='tight')
 plt.close()
         
@@ -208,17 +214,56 @@ for p_idx in [1,2]:
                             linestyle='-', linewidth=0.5)
     states.set_rasterized(True)
 
+
     if p_idx == 1:
-        
+
         ax.pcolormesh(lccs_lon, lccs_lat, lccs_box[::1,::1],
                       cmap=cmap, norm=norm,
                       #extent=[lon_min, lon_max, lat_min, lat_max],
                       #origin='upper',
                       transform=ccrs.PlateCarree(),
                       rasterized=True)
-        
+
+
+
+        txt = ax.text(-100.0, 47.5, "ND", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-101.0, 44.75, "SD", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-94.50, 46.00, "MN", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-99.50, 41.5, "KS", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-93.50, 42.0, "IA", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-98.0, 38.5, "NE", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-93.0, 38.25, "MO", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-90.0, 44.00, "WI", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
+        txt = ax.text(-88.75, 40.25, "IL", ha='center', va='center',
+                transform=ccrs.PlateCarree())
+        txt.set_path_effects([
+            PathEffects.withStroke(linewidth=1, foreground='w')])
         ax.set_title("Land cover")
-        
+
     elif p_idx == 2:
 
         # KDE of sampling pattern
@@ -246,17 +291,18 @@ for p_idx in [1,2]:
                   interpolation='bicubic',
                   transform=ccrs.PlateCarree(),
                   rasterized=True)
-        '''
-        ax.scatter(gosat_h5['lon'][:], gosat_h5['lat'][:],
-                   marker='.', s=1,
-                   transform=ccrs.PlateCarree(),
-                   #edgecolors='grey', linewidths=0.25,
-                   color='blue', rasterized=True)
-        '''
-        ax.set_title("GOSAT sampling")
+        
+        #ax.scatter(gosat_h5['lon'][:], gosat_h5['lat'][:],
+        #           marker='.', s=1,
+        #           transform=ccrs.PlateCarree(),
+        #           #edgecolors='grey', linewidths=0.25,
+        #           color='blue', rasterized=True)
 
+        ax.set_title("GOSAT sampling")
+   
     ax.gridlines(linestyle='dashed',
                  xlocs=[lon_min, lon_max],
                  ylocs=[lat_min, lat_max])
 
 plt.savefig('coverage_map.png', bbox_inches='tight')
+plt.close('all')

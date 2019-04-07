@@ -53,6 +53,9 @@ df_pp_wheat =  pd.read_csv('progress_wheat.csv', sep=',', thousands=',')
 df_production = pd.read_csv('corn_soy_production.csv', sep=',', thousands=',')
 df_yield = pd.read_csv('corn_soy_yield.csv', sep=',', thousands=',')
 
+# Quality
+df_status_corn = pd.read_csv('quality_all_corn.csv', sep=',', thousands=',')
+
 period = "YEAR"
 start_year = 2010
 end_year = 2016
@@ -164,3 +167,9 @@ make_panels(df_pp_wheat[df_pp_wheat['Data Item'] == "WHEAT, SPRING, DURUM - PROG
 make_panels(df_pp_wheat[df_pp_wheat['Data Item'] == "WHEAT, SPRING, (EXCL DURUM) - PROGRESS, MEASURED IN PCT PLANTED"],
             'Value', 'spring_wheat_progress.pdf',
             query='(Commodity == "WHEAT") & (Year > 2009) & (Year < 2017)')
+
+for status in ['VERY POOR', 'POOR', 'FAIR', 'GOOD', 'EXCELLENT']:
+    make_panels(df_status_corn[df_status_corn['Data Item'] == f"CORN - CONDITION, MEASURED IN PCT {status}"],
+                'Value', f'corn_status_{status}.pdf',
+                query='(Commodity == "CORN") & (Year > 2009) & (Year < 2017)')
+
