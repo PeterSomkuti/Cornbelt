@@ -352,8 +352,8 @@ def ts_overview(plot_df, sif_list, aux_list,
         ax.legend(fontsize=7, loc='lower left', framealpha=1.0)
         # Standard deviation to spot where significant anomalies lie
         if hline is not None:
-            ax.hlines([-sif_data.median(axis=1).std(),
-                       sif_data.median(axis=1).std()],
+            ax.hlines([-3*sif_data.median(axis=1).std(),
+                       3*sif_data.median(axis=1).std()],
                       xmin=sif_data.index[0], xmax=sif_data.index[-1],
                       linestyle='dashed', color='g', lw=1.0)
 
@@ -502,6 +502,7 @@ aux_list = [#'gome2_sif',
     'myd11_lst_day',
     'sm_combined',
     #######
+    'myd13_ndvi',
     'myd13_evi',
     'fvc',
     'lai',
@@ -510,7 +511,7 @@ aux_list = [#'gome2_sif',
     ####
     #'myd13_ndvi',
     #####
-    'CASA_NEE', 'CASA_GEE', 'uoe-7.1b']
+    'CASA_GEE', 'CASA_NEE', 'uoe-7.1b']
 
 aux_labels = [#'GOME-2 SIF [mW/m$^2$/sr/nm]',
     'GRACE [cm]',
@@ -518,6 +519,7 @@ aux_labels = [#'GOME-2 SIF [mW/m$^2$/sr/nm]',
     'LST [K]',
     'Combined SM [m$^3$/m$^3$]',
     ####
+    'NDVI',
     'EVI',
     'FVC',
     'LAI',
@@ -526,12 +528,12 @@ aux_labels = [#'GOME-2 SIF [mW/m$^2$/sr/nm]',
     ####
     #'NDVI',
     ####
-    'CASA NPP [gC/m$^2$/yr]',
     'CASA GPP [gC/m$^2$/yr]',
+    'CASA NPP [gC/m$^2$/yr]',
     'UoE NPP [gC/m$^2$/yr]']
 
 sls = [slice(0,2), slice(3,6), slice(6,9), slice(9,10),  slice(11, 13)]
-sls = [slice(0,4), slice(4,7), slice(7,10)]
+sls = [slice(0,4), slice(4,8), slice(8,11)]
 
 for absrel, pol, window in itertools.product(
         ['abs', 'rel'], ['_P', '_S', ''], ['755', '772']):
@@ -540,7 +542,7 @@ for absrel, pol, window in itertools.product(
 
         sl = sls[x]
 
-        if x == 0:
+        if x < 2:
             figsize = (4, 4.5)
         else:
             figsize = (4, 3.5)
@@ -648,115 +650,120 @@ for sif_integral in range(2,13):
 '''
 
 sif_integral = [5, 5] #[6, 7]
-crop_week = [18, 18]
+crop_week = [17, 17]
 plottitle = ['Corn', 'Soybeans']
 markerlist = ['o', '^', 's', '8', '<', 'p', 'D']
 
-for x_key in [SL['abs_755'], 'myd13_evi', 'myd13_ndvi', 'fvc', 'lai', 'VI_FRACTION']:
-    fig, axarr  = plt.subplots(1, 2, figsize=(4.5, 2.5), dpi=300)
+for crop_week in [[16,16], [17,17], [18,18], [19,19], [20,20], [21,21]]:
+    for x_key in [SL['abs_755'], 'myd13_evi', 'myd13_ndvi', 'fvc', 'lai', 'VI_FRACTION']:
+        fig, axarr  = plt.subplots(1, 2, figsize=(4.5, 2.5), dpi=300)
 
-    print(x_key)
-    print(type(x_key))
-    for i, (dfp, df_area) in enumerate([(dfp_corn.copy(), df_area_corn.copy()),
-                                        (dfp_soy.copy(), df_area_soy.copy())]):
+        print(x_key)
+        print(type(x_key))
+        for i, (dfp, df_area) in enumerate([(dfp_corn.copy(), df_area_corn.copy()),
+                                            (dfp_soy.copy(), df_area_soy.copy())]):
 
-        ax = axarr[i]
+            ax = axarr[i]
 
-        xdata = []
-        ydata = []
-        lines = []
+            xdata = []
+            ydata = []
+            lines = []
 
-        for j, year in enumerate(range(2010, 2017)):
+            for j, year in enumerate(range(2010, 2017)):
 
-            if x_key != 'VI_FRACTION':
-                sif_data = dfs.loc[dfs.index.year == year, x_key]
+                if x_key != 'VI_FRACTION':
+                    sif_data = dfs.loc[dfs.index.year == year, x_key]
 
-                if type(x_key) == list:
-                    sif_mean = sif_data.mean(axis=1)
-                    sif_std = sif_data.std(axis=1)
+                    if type(x_key) == list:
+                        sif_mean = sif_data.mean(axis=1)
+                        sif_std = sif_data.std(axis=1)
+                    else:
+                        sif_mean = sif_data.copy()
+                        sif_std = 0 * sif_mean
+
+                for state in np.unique(dfp['State']):
+                    this_area = df_area.query(f'Year == {year} & State == "{state}" & Period == "YEAR"')
+                    dfp.loc[(dfp['Year'] == year) & (dfp['State'] == state), 'Value'] *= this_area.Value.values
+
+
+                # We are deviding by 1e8 because million * percent
+                crop_data = dfp[dfp.index.year == year]['Value'].resample('W').sum() / 1e8
+                # crop_std = dfp[dfp.index.year == year]['Value'].resample('W').std() * 0.0
+                crop_idx = np.where(crop_data.index.week == crop_week[i])[0]
+
+
+                if x_key == "VI_FRACTION":
+                    xdata.append(vi_fraction[year])
                 else:
-                    sif_mean = sif_data.copy()
-                    sif_std = 0 * sif_mean
+                    xdata.append(sif_mean[1:sif_integral[i]].sum())
+                if len(crop_idx) == 0:
+                    ydata.append(0)
+                else:
+                    ydata.append(crop_data[crop_idx[0]])
 
-            for state in np.unique(dfp['State']):
-                this_area = df_area.query(f'Year == {year} & State == "{state}" & Period == "YEAR"')
-                dfp.loc[(dfp['Year'] == year) & (dfp['State'] == state), 'Value'] *= this_area.Value.values
-
-
-            # We are deviding by 1e8 because million * percent
-            crop_data = dfp[dfp.index.year == year]['Value'].resample('W').sum() / 1e8
-            # crop_std = dfp[dfp.index.year == year]['Value'].resample('W').std() * 0.0
-            crop_idx = np.where(crop_data.index.week == crop_week[i])[0]
-
-
-            if x_key == "VI_FRACTION":
-                xdata.append(vi_fraction[year])
-            else:
-                xdata.append(sif_mean[1:sif_integral[i]].sum())
-            if len(crop_idx) == 0:
-                ydata.append(0)
-            else:
-                ydata.append(crop_data[crop_idx[0]])
-
-            l1, l2, l3 = ax.errorbar(x=xdata[-1],
-                                     y=ydata[-1],
-                                     xerr=np.sqrt(np.sum(sif_std[2:sif_integral[i]]**2)),
-                                     #yerr=crop_std[crop_idx],
-                                     fmt=markerlist[j], label=year,
-                                     markersize=3,
-                                     capsize=1.0,
-                                     elinewidth=1.0)
+                l1, l2, l3 = ax.errorbar(x=xdata[-1],
+                                         y=ydata[-1],
+                                         xerr=np.sqrt(np.sum(sif_std[3:sif_integral[i]]**2)),
+                                         #yerr=crop_std[crop_idx],
+                                         fmt=markerlist[j], label=year,
+                                         markersize=3,
+                                         capsize=1.0,
+                                         elinewidth=1.0)
 
             lines.append(l1)
 
-        ax.set_title(plottitle[i], fontsize=8)
-        int_month = ['Jan', 'Feb', 'Mar', 'Apr',
-                     'May', 'Jun', 'Jul', 'Aug',
-                     'Sep', 'Oct', 'Nov', 'Dec'][sif_integral[i]]
+            int_month = ['Jan', 'Feb', 'Mar', 'Apr',
+                         'May', 'Jun', 'Jul', 'Aug',
+                         'Sep', 'Oct', 'Nov', 'Dec'][sif_integral[i]]
+
+            if type(x_key) == list:
+                ax.set_xlabel(f'Cumulative SIF (Apr-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+            else:
+                ax.set_xlabel(f'Cumulative {x_key} (Apr-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+
+            if i == 0:
+                ax.set_ylabel(f'Area Planted by Week {crop_week[1]}\n[Million Acres]')
+            else:
+                ax.yaxis.tick_right()
+
+            lreg = sps.linregress(xdata, ydata)
+
+            fit = sm.OLS(ydata, sm.add_constant(xdata)).fit()
+
+            intercept = fit.params[0]
+            intercept_error = np.sqrt(fit.cov_params()[0,0])
+            slope = fit.params[1]
+            slope_error = np.sqrt(fit.cov_params()[1,1])
+            r_value = fit.rsquared
+            p_value = fit.pvalues[1]
+
+            t_string = ("$y = {:0.1f} ({:0.1f}) + x \cdot {:0.1f} ({:0.1f})$"
+                    .format(intercept, intercept_error, slope, slope_error))
+
+            ax.set_title(plottitle[i] + "\n" + t_string, fontsize=8)
+
+            xplot = np.array([0.9 * min(xdata), 1.1 * max(xdata)])
+            ax.plot(xplot, np.array(xplot) * lreg[0] + lreg[1],
+                    '--', linewidth=0.75, linestyle='dashed')
+            #label="r = {:0.2f}".format(lreg[2]))
+            #ax.legend(ncol=2, fontsize=8)
+
+            ax.text(0.95, 0.05, "r = {:0.2f}, p = {:0.2f}".format(r_value, p_value),
+                    transform=ax.transAxes, ha='right', va='bottom',
+                    fontsize=8)
+            # xerr=sif_std[:4].sum())
+            if (i==1):
+                ax.legend(ncol=1, fontsize=7, loc='upper left')
+                #fig.legend(lines, np.arange(2010, 2017), loc='center right',
+                #           fontsize=7, bbox_to_anchor=(1.2, 0.5))
+            fig.tight_layout()
 
         if type(x_key) == list:
-            ax.set_xlabel(f'Cumulative SIF (Feb-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+            fname = f'corn_soy_planted_sif_{crop_week[0]}.pdf'
         else:
-            ax.set_xlabel(f'Cumulative {x_key} (Feb-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
-
-        if i == 0:
-            ax.set_ylabel('Area Planted by Week 18\n[Million Acres]')
-        else:
-            ax.yaxis.tick_right()
-
-        lreg = sps.linregress(xdata, ydata)
-
-        fit = sm.OLS(ydata, sm.add_constant(xdata)).fit()
-
-        intercept = fit.params[0]
-        intercept_error = np.sqrt(fit.cov_params()[0,0])
-        slope = fit.params[1]
-        slope_error = np.sqrt(fit.cov_params()[1,1])
-        r_value = fit.rsquared
-        p_value = fit.pvalues[1]
-
-        xplot = np.array([0.9 * min(xdata), 1.1 * max(xdata)])
-        ax.plot(xplot, np.array(xplot) * lreg[0] + lreg[1],
-                '--', linewidth=0.75, linestyle='dashed')
-        #label="r = {:0.2f}".format(lreg[2]))
-        #ax.legend(ncol=2, fontsize=8)
-
-        ax.text(0.95, 0.05, "r = {:0.2f}, p = {:0.2f}".format(r_value, p_value),
-                transform=ax.transAxes, ha='right', va='bottom',
-                fontsize=8)
-                # xerr=sif_std[:4].sum())
-        if (i==1):
-            ax.legend(ncol=1, fontsize=7, loc='upper left')
-        #fig.legend(lines, np.arange(2010, 2017), loc='center right',
-        #           fontsize=7, bbox_to_anchor=(1.2, 0.5))
-    fig.tight_layout()
-
-    if type(x_key) == list:
-        fname = 'corn_soy_planted_sif.pdf'
-    else:
-        fname = f'corn_soy_planted_{x_key}.pdf'
-    plt.savefig(fname, bbox_inches='tight')
-    plt.close()
+            fname = f'corn_soy_planted_{x_key}_{crop_week[0]}.pdf'
+        plt.savefig(fname, bbox_inches='tight')
+        plt.close()
 
 
 
@@ -831,7 +838,7 @@ for df_name, df_yp in [('yield', df_yield),
                         np.sum(lccs[:,:][lc_filter][this_year_filter])
                     xdata.append(this_fraction)
                 else:
-                    xdata.append(sif_mean[5:10].sum())
+                    xdata.append(sif_mean[6:10].sum())
 
 
                 ydata.append(crop_data)
@@ -875,10 +882,10 @@ for df_name, df_yp in [('yield', df_yield),
             ax.plot(xplot, np.array(xplot) * slope + intercept,
                     '--', linewidth=0.75, linestyle='dashed')
 
-            t_string = ("$y = {:0.2f} ({:0.2f}) + x \cdot {:0.2f} ({:0.2f})$"
+            t_string = ("$y = {:0.1f} ({:0.1f}) + x \cdot {:0.1f} ({:0.1f})$"
                     .format(intercept, intercept_error, slope, slope_error))
 
-            ax.set_title(plottitle[i], fontsize=8)
+            ax.set_title(plottitle[i] + "\n" + t_string, fontsize=8)
             if crop == "CORN":
                 x_coord = 0.05
                 ha = 'left'
@@ -889,12 +896,12 @@ for df_name, df_yp in [('yield', df_yield),
             ax.text(x_coord, 0.05, "r = {:0.2f}, p = {:0.2f}".format(r_value, p_value),
                     transform=ax.transAxes, ha=ha, va='bottom',
                     fontsize=8)
-            '''
-            ax.text(0.95, 0.15, "$y = {:0.2f} ({:0.2f}) + x \cdot {:0.2f} ({:0.2f})$"
-                    .format(intercept, intercept_error, slope, slope_error),
-                    transform=ax.transAxes, ha='right', va='bottom',
-                    fontsize=8)
-            '''
+
+            #ax.text(0.95, 0.15, "$y = {:0.1f} ({:0.1f}) + x \cdot {:0.1f} ({:0.1f})$"
+            #        .format(intercept, intercept_error, slope, slope_error),
+            #        transform=ax.transAxes, ha='right', va='bottom',
+            #        fontsize=8)
+
 
             if x_key == "VI_FRACTION":
                 ax.set_xlabel("NDVI > 0.3 ROI Fraction [%]")
@@ -905,9 +912,9 @@ for df_name, df_yp in [('yield', df_yield),
                 ax.set_xlabel("Crop type LC fraction [%]")
             else:
                 if type(x_key) == list:
-                    ax.set_xlabel(f'Cumulative SIF (Jun-Oct) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+                    ax.set_xlabel(f'Cumulative SIF (Jul-Oct) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
                 else:
-                    ax.set_xlabel(f'Cumulative {x_key} (Jun-Oct) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
+                    ax.set_xlabel(f'Cumulative {x_key} (Jul-Oct) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
 
             if i == 1:
                 ax.legend(fontsize=7, bbox_to_anchor=(1.25, 0.85))
