@@ -113,7 +113,12 @@ for key in h5.keys():
             df[key] = h5[key][:]
 print("Done")
 
+df['albedo_P'] = np.pi * df['meanrad1p'] / (np.cos(np.deg2rad(df['SZA'])) * 7.15e-6)
+df['albedo_S'] = np.pi * df['meanrad1s'] / (np.cos(np.deg2rad(df['SZA'])) * 7.15e-6)
 
+for pol in ['P', 'S']:
+    for win in ['755', '772']:
+        df[f'retr_albedo_{win}{pol}'] = df[f'r_svsv_cont_001_001_{win}_{pol}'] * df[f'albedo_{pol}']
 
 vi_fraction = pd.Series(index=np.arange(2010, 2017))
 planted_total = pd.Series(index=np.arange(2010, 2017))
@@ -392,7 +397,12 @@ def ts_overview(plot_df, sif_list, aux_list,
         else:
             aux_label = aux_labels[i]
 
-        ax.plot(plot_df.loc[:, aux],
+        if ('GPP' in aux_label) or ('NPP' in aux_label):
+            aux_data = plot_df.loc[:, aux] * 1e-3
+            aux_lim = aux_lim * 1e-3
+        else:
+            aux_data = plot_df.loc[:, aux]
+        ax.plot(aux_data,
                 #color=aux_colors[i],
                 label=aux_label, zorder=5)
         '''
@@ -419,6 +429,7 @@ def ts_overview(plot_df, sif_list, aux_list,
         ax2.plot(sif_data.median(axis=1),
                  color=sifcolor, linestyle='dashed', lw=1.0,
                  zorder=5)
+        #ax2.set_ylabel("SIF Anomaly")
         ax2.set_yticklabels([])
         ax2.legend(ax_handles, ax_labels,
                    fontsize=7, loc='lower left', framealpha=1.0)
@@ -511,7 +522,8 @@ aux_list = [#'gome2_sif',
     ####
     #'myd13_ndvi',
     #####
-    'CASA_GEE', 'CASA_NEE', 'uoe-7.1b']
+    'CASA_GEE', 'CASA_NEE', 'uoe-7.1b',
+    'albedo_P', 'retr_albedo_755P', 'albedo_S', 'retr_albedo_755S']
 
 aux_labels = [#'GOME-2 SIF [mW/m$^2$/sr/nm]',
     'GRACE [cm]',
@@ -528,12 +540,18 @@ aux_labels = [#'GOME-2 SIF [mW/m$^2$/sr/nm]',
     ####
     #'NDVI',
     ####
-    'CASA GPP [gC/m$^2$/yr]',
-    'CASA NPP [gC/m$^2$/yr]',
-    'UoE NPP [gC/m$^2$/yr]']
+    'CASA GPP [kgC/m$^2$/yr]',
+    'CASA NPP [kgC/m$^2$/yr]',
+    'UoE NPP [kgC/m$^2$/yr]',
+    ###,
+    'Prior Albedo P',
+    'Retr Albedo P',
+    'Prior Albedo S',
+    'Retr Albedo S',
+]
 
 sls = [slice(0,2), slice(3,6), slice(6,9), slice(9,10),  slice(11, 13)]
-sls = [slice(0,4), slice(4,8), slice(8,11)]
+sls = [slice(0,4), slice(4,8), slice(8,11), slice(11,15)]
 
 for absrel, pol, window in itertools.product(
         ['abs', 'rel'], ['_P', '_S', ''], ['755', '772']):
@@ -544,9 +562,11 @@ for absrel, pol, window in itertools.product(
 
         if x < 2:
             figsize = (4, 4.5)
-        else:
+        elif x == 2:
             figsize = (4, 3.5)
-
+        if x > 2:
+            figsize = (4, 4.5)
+            
         print(x, figsize)
         ts_overview(dfa, SL[f'{absrel}_{window}{pol}'], aux_list[sl],
                     aux_labels=aux_labels[sl],
@@ -649,13 +669,14 @@ for sif_integral in range(2,13):
 
 '''
 
-sif_integral = [5, 5] #[6, 7]
+sif_integral = [6, 6] #[6, 7]
 crop_week = [17, 17]
 plottitle = ['Corn', 'Soybeans']
 markerlist = ['o', '^', 's', '8', '<', 'p', 'D']
 
 for crop_week in [[16,16], [17,17], [18,18], [19,19], [20,20], [21,21]]:
-    for x_key in [SL['abs_755'], 'myd13_evi', 'myd13_ndvi', 'fvc', 'lai', 'VI_FRACTION']:
+    for x_key in [SL['abs_755'], 'myd13_evi', 'myd13_ndvi', 'retr_albedo_755S',
+                  'retr_albedo_755P', 'fvc', 'lai', 'VI_FRACTION']:
         fig, axarr  = plt.subplots(1, 2, figsize=(4.5, 2.5), dpi=300)
 
         print(x_key)
@@ -704,17 +725,18 @@ for crop_week in [[16,16], [17,17], [18,18], [19,19], [20,20], [21,21]]:
                 l1, l2, l3 = ax.errorbar(x=xdata[-1],
                                          y=ydata[-1],
                                          xerr=np.sqrt(np.sum(sif_std[3:sif_integral[i]]**2)),
+                                         #xerr=np.sqrt(np.sum(sif_std[3:sif_integral[i]]**2)),
                                          #yerr=crop_std[crop_idx],
                                          fmt=markerlist[j], label=year,
                                          markersize=3,
                                          capsize=1.0,
-                                         elinewidth=1.0)
+                                         elinewidth=0.5)
 
             lines.append(l1)
 
             int_month = ['Jan', 'Feb', 'Mar', 'Apr',
                          'May', 'Jun', 'Jul', 'Aug',
-                         'Sep', 'Oct', 'Nov', 'Dec'][sif_integral[i]]
+                         'Sep', 'Oct', 'Nov', 'Dec'][sif_integral[i]-1]
 
             if type(x_key) == list:
                 ax.set_xlabel(f'Cumulative SIF (Apr-{int_month}) \n[Month $\cdot$ mW/m$^2$/sr/nm]')
@@ -783,6 +805,20 @@ for df_name, df_yp in [('yield', df_yield),
 
             dfp = df_yp.query(f'Commodity == "{crop}" & Period == "YEAR"')
 
+            # De-trend yield values!
+            x_vals = []
+            y_vals = []
+            y_errs = []
+
+            for year, dfx in dfp.groupby("Year"):
+                if (year < 1955): continue
+                x_vals.append(year)
+                y_vals.append(dfx.Value.mean())
+                y_err.append(dfx.Value.std())
+
+            yield_slope, yield_intercept, _, _, _ = sps.linregress(x_vals, y_vals)
+                
+
             ax = axarr[i]
 
             xdata = []
@@ -797,7 +833,7 @@ for df_name, df_yp in [('yield', df_yield),
                     (x_key != "LC_FRACTION")):
 
                     sif_data = dfs.loc[dfs.index.year == year, x_key]
-                    sif_std = dfstd.loc[dfs.index.year == year, x_key]
+                    sif_std = dfstd.loc[dfa.index.year == year, x_key]
 
                     this_area = planted_area_corn[year] + planted_area_soy[year] + planted_area_wheat[year]
 
@@ -811,6 +847,8 @@ for df_name, df_yp in [('yield', df_yield),
 
                 # We are deviding by 1e8 because million * percent
                 crop_data = dfp[dfp['Year'] == year]['Value'].mean()
+                # Take trend out
+                crop_data -= (yield_intercept + year*yield_slope)
                 crop_std = dfp[dfp['Year'] == year]['Value'].std()
 
                 #crop_std = crop_std / np.sqrt(dfp[dfp['Year'] == year]['Value'].count())
@@ -854,13 +892,13 @@ for df_name, df_yp in [('yield', df_yield),
                             fmt=markerlist[j], label=year,
                             markersize=3,
                             capsize=1.0,
-                            elinewidth=1.0)
+                            elinewidth=0.5)
 
             if i == 0:
                 if (df_name == 'production'):
-                    ax.set_ylabel('Mean crop production \n[$10^9$ Bushels]')
+                    ax.set_ylabel('Mean detrended crop production \n[$10^9$ Bushels]')
                 else:
-                    ax.set_ylabel('Mean crop yield \n[Bushels / acre]')
+                    ax.set_ylabel('Mean detrended crop yield \n[Bushels / acre]')
             else:
                 ax.yaxis.tick_right()
 
@@ -933,7 +971,89 @@ for df_name, df_yp in [('yield', df_yield),
         plt.close()
 
 
+# cumulative Flux-SIF data
 
+
+
+for fluxkey0, fluxtitle0 in [('CASA_NEE', 'CASA NPP'),
+                             ('CASA_GEE', 'CASA GPP'),
+                             ('myd13_ndvi', 'NDVI'),
+                             ('myd13_evi', 'EVI')]:
+
+    print(fluxkey0)
+    print(fluxtitle0)
+    
+    fig, axarr = plt.subplots(1, 2, figsize=(4.0, 2.5))
+
+    for i, fluxkey in enumerate([fluxkey0, 'uoe-7.1b']):
+
+        ax = axarr[i]
+    
+        xdata = []
+        ydata = []
+        y_err = []
+
+    
+        for j, (year, dfx) in enumerate(dfs.groupby('Year')):
+
+            if (i == 0) & (year == 2016): continue 
+        
+            xdata.append(dfx.iloc[3:8,:][fluxkey].sum() * 1e-3 * 5/12)
+            ydata.append(dfx.loc[:, SL['abs_755']].iloc[3:8,:].mean(axis=1).sum())
+            y_err.append(dfx.loc[:, SL['abs_755']].iloc[3:8,:].std(axis=1).sum())
+            
+            ax.errorbar(xdata[-1], ydata[-1], yerr=y_err[-1],
+                        fmt=markerlist[j], label=int(year),
+                        markersize=3,
+                        capsize=1.0,
+                        elinewidth=0.5)
+
+        fit = sm.WLS(ydata, sm.add_constant(xdata), weights=1.0/(np.array(y_err)**2)).fit()
+
+        intercept = fit.params[0]
+        intercept_error = np.sqrt(fit.cov_params()[0,0])
+        slope = fit.params[1]
+        slope_error = np.sqrt(fit.cov_params()[1,1])
+        r_value = fit.rsquared
+        p_value = fit.pvalues[1]
+
+
+        xplot = np.array([0.98 * min(xdata), 1.02 * max(xdata)])
+        ax.plot(xplot, np.array(xplot) * slope + intercept,
+                '--', linewidth=0.75, linestyle='dashed')
+
+        t_string = ("$y = {:0.1f} ({:0.1f}) + x \cdot {:0.1f} ({:0.1f})$"
+                    .format(intercept, intercept_error, slope, slope_error))
+
+        if (i == 0): fluxtitle = fluxtitle0
+        if (i == 1): fluxtitle = "UoE NPP"
+    
+        ax.set_title(fluxtitle + "\n" + t_string, fontsize=8)
+
+        if (i == 1):
+            x_coord = 0.05
+            ha = 'left'
+        elif (i == 0):
+            x_coord = 0.95
+            ha = 'right'
+                
+        ax.text(x_coord, 0.05, "r = {:0.2f}, p = {:0.2f}".format(r_value, p_value),
+                transform=ax.transAxes, ha=ha, va='bottom',
+                fontsize=8)
+
+        ax.set_xlabel("Net surface flux (Apr-Jul)\n [kgC/m$^2$]")
+
+        if (i == 0):
+            ax.set_ylabel("Cumulative SIF (Apr-Jul)\n[Month $\cdot$ mW/m$^2$/sr/nm]")
+        if (i == 1):
+            ax.legend(fontsize=7)
+            ax.yaxis.tick_right()
+
+    plt.tight_layout()
+    plt.savefig(f"SIF_flux_cumulative_{fluxkey0}.pdf", bbox_inches='tight')
+    plt.close('all')
+        
+'''
 fig, axarr  = plt.subplots(1, 1, figsize=(4.5, 2.5), dpi=300)
 for i, crop in enumerate(['CORN']): #, 'SOYBEANS']):
 
@@ -972,7 +1092,7 @@ for i, crop in enumerate(['CORN']): #, 'SOYBEANS']):
                     fmt=markerlist[j], label=year,
                     markersize=3,
                     capsize=1.0,
-                    elinewidth=1.0)
+                    elinewidth=0.5)
 
 plt.legend()
 plt.savefig('planted_vs_yield.pdf', bbox_inches='tight')
@@ -1041,7 +1161,7 @@ for x_key in [SL['abs_755'], 'corr_spline_abs_755_P', 'corr_spline_abs_755_S',
                             fmt=markerlist[year_cnt], label=year,
                             markersize=3,
                             capsize=1.0,
-                            elinewidth=1.0)
+                            elinewidth=0.5)
 
             if (j == 0): ax.legend(fontsize=8)
 
@@ -1069,3 +1189,4 @@ for x_key in [SL['abs_755'], 'corr_spline_abs_755_P', 'corr_spline_abs_755_S',
             plt.savefig(f'{crop}_status_SIF.pdf', bbox_inches='tight')
         else:
             plt.savefig(f'{crop}_status_{x_key}.pdf', bbox_inches='tight')
+'''

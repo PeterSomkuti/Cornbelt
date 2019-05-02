@@ -92,7 +92,7 @@ lc_sort_GOSAT = np.argsort(lc_un_GOSAT[1])[::-1]
 
 # Make a nice barplot with the results
 bar_width = 0.25
-plt.figure(figsize=(2.5, 3), dpi=300)
+plt.figure(figsize=(2.0, 3), dpi=300)
 
 plt.barh(np.arange(len(lc_percs_ALL)) - bar_width / 2,
          lc_percs_ALL[lc_sort_ALL],
@@ -166,8 +166,8 @@ df_diff.loc['2015-01-01'] = np.nan
 fig = plt.figure(figsize=(3, 2), dpi=300)
 
 for x in lc_sort_ALL[:3]:
-    (df_diff[f'gosat_{x}'] - df_diff[f'all_{x}']).plot(label=lc_labels[x])
-fig.legend(bbox_to_anchor=(1.65, 0.85), ncol=1, fontsize=7)
+    (df_diff[f'gosat_{x}'] - df_diff[f'all_{x}']).plot(label=lc_labels[x], lw=1.0)
+fig.legend(bbox_to_anchor=(0.75, 1.35), ncol=1, fontsize=7)
 #fig.subplots_adjust(right=1.25)
 fig.tight_layout()
 plt.ylabel("LC coverage difference [$\%$]")

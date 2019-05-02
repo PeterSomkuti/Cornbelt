@@ -1,7 +1,8 @@
-\documentclass[preprint, a4paper, 10pt, times]{elsarticle}
+\documentclass[preprint, a4paper, 10pt, times, 5p]{elsarticle}
 
-\usepackage{lineno, hyperref}
+\usepackage{hyperref}
 
+\usepackage[switch]{lineno}
 \modulolinenumbers[5]
 
 \journal{Agricultural and Forest Meteorology\tnoteref{mytitlenote}}
@@ -20,7 +21,7 @@
 %\bibliographystyle{model1a-num-names}
 
 %% Harvard
-%\bibliographystyle{model2-names.bst}\biboptions{authoryear}
+\bibliographystyle{model2-names.bst}\biboptions{authoryear}
 
 %% Vancouver numbered
 %\usepackage{numcompress}\bibliographystyle{model3-num-names}
@@ -29,7 +30,7 @@
 %\usepackage{numcompress}\bibliographystyle{model4-names}\biboptions{authoryear}
 
 %% APA style
-\bibliographystyle{model5-names}\biboptions{authoryear}
+%\bibliographystyle{model5-names}\biboptions{authoryear}
 
 %% AMA style
 %\usepackage{numcompress}\bibliographystyle{model6-num-names}
@@ -42,7 +43,7 @@
 
 \begin{frontmatter}
 
-\title{A Multi-Satellite Investigation of the US Corn Belt in the Period 2010-2016 with a Focus on Solar-Induced Fluorescence}
+\title{A Multi-Satellite Investigation of the US Corn Belt in the Period 2010-2016 with a Focus on Solar-Induced Fluorescence - PAUL SAYS I NEED SEXIER TITLE}
 
 %% Group authors per affiliation:
 \author[uol,nceo]{Peter Somkuti\corref{cor1}\fnref{fn1}}
@@ -78,7 +79,7 @@ Talk about Corn Belt, SIF, and other studies as well as their shortcomings. Ment
 
 The Greenhouse Gases Observing Satellite (GOSAT) is the first mission solely dedicated to measure atmospheric concentrations of carbon dioxide (CO$_2$) and methane (CH$_4$). Launched in early 2009 and operated by the Japan Aerospace Exploration Agency (JAXA), the Japanese Ministry of Environment (MoE) and the National Institute for Environmental Studies (NIES), GOSAT employs a Fourier-transform spectrometer (TANSO-FTS) to passively measure sunlight back-reflected from the surface of the Earth \citep{yokota2009global}. These hyper-spectral measurements are then used together with appropriate physical models and inversion schemes to retrieve the atmospheric concentration of the trace gases.
 
-Due to the high spectral resolution of TANSO-FTS in the O$_2$ A-band at wavelength of $760\:\mathrm{nm}$, several solar (Fraunhofer) lines can be resolved and utilised for the retrieval of SIF. We use the retrieval method described in \citet{Frankenberg2011}. This so-called \textit{physically-based} retrieval is derived from the Fraunhofer line discrimination method, first described in \citet{plascyk_fraunhofer_1975}. Briefly summarized, the method relies on the fact that any additive radiation originating from the surface will reduce the fractional depth of Fraunhofer lines in the top-of-atmosphere (TOA) spectrum. It is therefore possible to decouple reflectance from the additive fluorescence contribution to the total TOA radiance. TANSO-FTS records radiances in the near-visible to shortwave infrared wavelength range in two linear polarization states: P - parallel, and S - perpendicular to the plane of incidence (? or is it principal plane?).
+Due to the high spectral resolution of TANSO-FTS in the O$_2$ A-band at wavelength of $760\:\mathrm{nm}$, several solar (Fraunhofer) lines can be resolved and utilised for the retrieval of SIF. We use the retrieval method described in \citet{Frankenberg2011}. This so-called \textit{physically-based} retrieval is derived from the Fraunhofer line discrimination method, first described in \citet{plascyk_fraunhofer_1975}. Briefly summarized, the method relies on the fact that any additive radiation originating from the surface will reduce the fractional depth of Fraunhofer lines in the top of atmosphere (TOA) spectrum. It is therefore possible to decouple reflectance from the additive fluorescence contribution to the total TOA radiance. TANSO-FTS records radiances in the near-visible to shortwave infrared wavelength range in two linear polarization states: P - parallel, and S - perpendicular to the sensor plane, spanned between the radial Earth-spacecraft vector, the spacecraft velocity vector, and the vector between spacecraft yaw and spacecraft velocity.
 
 To perform the GOSAT SIF retrievals we employ the University of Leicester Full-Physics algorithm \citep{Cogan2012}, called UoL-FP. It derives atmospheric and surface quantities from hyper-spectral measurements via its two components: a full-physics forward model, which accurately models the solar radiation entering and propagating through Earth's atmosphere and its interaction with the surface, and the finite response at the detector on the space-based platform. The forward model calculations are then coupled with the second component of the algorithm: a non-linear inversion scheme that applies the Levenberg-Marquardt modification to the Gauss-Newton method, in order to modify certain input parameters of the forward model (the so-called state vector) to match model calculation with real measurements. Inferring atmospheric and surface quantities as well as quantifying the uncertainty on each retrieved parameter is performed using a Bayesian optimal estimation (OE) framework according to \citet{Rodgers2000}.
 
@@ -86,15 +87,15 @@ We make use of the same processing pipeline which was previously used for the ge
 
 We retrieve SIF at two micro-windows at $755\:\mathrm{nm}$ ($755.86 - 758.95$ nm) and $772\:\mathrm{nm}$ ($769.59 - 774.83$ nm), as well as the two polarizations, independently, using \citet{Frankenberg2011}. For both retrieval windows, the SIF radiances are represented by a constant additive offset to the TOA radiances, along with a linear surface albedo (constant + slope), and instrument dispersion shift and stretch. As there are weak oxygen lines present in the $772\:\mathrm{nm}$ window, surface pressure is additionally retrieved in that micro-window. We excluded any scenes with large cloud contamination by using a cloud-screening algorithm beforehand. Only those GOSAT scenes are processed where the apparent surface pressure deviated by less than $100\:\mathrm{hPa}$ from the ERA-Interim prediction. The comparatively large surface pressure deviation threshold is possible due to SIF retrievals being less sensitive to cloud contamination of the scene \citep{frankenberg2012remote}.
 
-A crucial step in the SIF retrieval process is the bias correction. Small non-linearities in the analogue-to-digital conversion of the TANSO-FTS interferograms lead to the same fractional reduction of Fraunhofer lines as any SIF signal would do and thus result in unphysical SIF values. In order to rid the measurements of these instrument artefacts, the retrieved SIF values need to be corrected. To achieve the bias correction, we use a slightly different method compared to \citet{Frankenberg2011}. First, we use the ESA CCI Land Cover map v2.0.7 \citep{Bontemps2013} to obtain the land cover classes for the surfaces seen by each GOSAT measurement (see Section~\ref{sec:collocation}). To identify footprints which can be assumed to be permanently free of vegetation, we consider only surfaces where at least $95\%$ of all land cover-class pixels within the footprint belong to the types: urban, desert, snow and ice, or any bare type. This approach has the advantage that highly reflective surfaces like ice shields or deserts are used for the correction process, as well as darker surfaces such as mountainous regions.
+A crucial step in the SIF retrieval process is the bias correction. Small non-linearities in the analog-to-digital conversion of the TANSO-FTS interferograms lead to the same fractional reduction of Fraunhofer lines as any SIF signal would do and thus result in unphysical SIF values. In order to rid the measurements of these instrument artefacts, the retrieved SIF values need to be corrected. To achieve the bias correction, we use a slightly different method compared to \citet{Frankenberg2011}. First, we use the ESA CCI Land Cover map v2.0.7 \citep{Bontemps2013} to obtain the land cover classes for the surfaces seen by each GOSAT measurement (see Section~\ref{sec:collocation}). To identify footprints which can be assumed to be permanently free of vegetation, we consider only surfaces where at least $95\%$ of all land cover-class pixels within the footprint belong to the types: urban, desert, snow and ice, or any bare type. This approach has the advantage that highly reflective surfaces like ice shields or deserts are used for the correction process, as well as darker surfaces such as mountainous regions.
 
-We produce calibration curves via the relationship between retrieved offset ($z_0$) and the mean radiance in the entire first GOSAT band. Ideally, this curve would be flat and centered around zero, however the instrumental artefacts lead to a somewhat complicated shape, as shown in Figure XX [should I put a figure here? or is this too technical already..]. This instrumental bias varies over time and requires a time-dependent correction. Consequently, we adopt three different strategies to correct for this instrumental bias. For the first one, we collect retrievals over non-fluorescing areas in seasonal aggregates (DJF, MAM, JJA, SON). For every season in every year, we correct the SIF retrievals according to the calibration curve derived at that particular season-year combination. The second strategy is similar, the only difference being that retrievals for an entire year are collected. The main difference in the two methods is the aggregation period: shorter periods make the calibration curves noisy, however are more able to catch instrumental issues which may affect the bias. The third and most elaborate strategy takes the time-dependence more explicitly into account. First, the all retrievals over non-fluorescing areas are collected and binned two dimensionally: monthly bins for the time dimension, and $14$ bins in the radiance dimension. Through this regular 2D grid, a spline interpolation function is used to calculate the bias at any given point in time-radiance space.  
+We produce calibration curves via the relationship between retrieved offset and the mean radiance in the entire first GOSAT band. Ideally, this curve would be flat and centered around zero, however the instrumental artefacts lead to a somewhat complicated shape, as shown in Figure~\ref{fig:calibration_curves}. This instrumental bias varies over time and requires a time-dependent correction. Consequently, we adopt three different strategies to correct for this instrumental bias. For the first one, we collect retrievals over non-fluorescing areas in seasonal aggregates (DJF, MAM, JJA, SON). For every season in every year, we correct the SIF retrievals according to the calibration curve derived at that particular season-year combination. The second strategy is similar, the only difference being that retrievals for an entire year are collected. The main difference in the two methods is the aggregation period: shorter periods make the calibration curves noisy, however are more able to catch instrumental issues which may affect the bias. The third and most elaborate strategy takes the time-dependence more explicitly into account. First, the all retrievals over non-fluorescing areas are collected and binned two dimensionally: monthly bins for the time dimension, and $14$ bins in the radiance dimension. Through this regular 2D grid, a spline interpolation function is used to calculate the bias at any given point in time-radiance space.  
 
 
 \subsection{Spatially and Temporally Collocated Earth Observation Data}
 \label{sec:collocation}
 
-GOSAT/TANSO-FTS was designed to measure atmospheric quantities, and thus differs from imaging-type measurement concepts (e.g.~MODIS) that are tailored to the measurement of surface quantities. The high-resolution spectrometer points at one location at a time with an instantaneous field of view (IFOV) of ZYX$^\circ$, which corresponds roughly to a circular footprint with $10.5\:\mathrm{km}$ diameter at nadir viewing geometry. As a consequence, it is necessary to consider the specific sampling pattern for the data sets in the analysis in order to avoid sampling bias (see Section~\ref{sec:sampling_bias}).
+GOSAT/TANSO-FTS was designed to measure atmospheric quantities, and thus differs from imaging-type measurement concepts (e.g.~MODIS) that are tailored to the measurement of surface quantities. The high-resolution spectrometer points at one location at a time with an instantaneous field of view (IFOV) of $15.8$ mrad, which corresponds roughly to a circular footprint with $10.5\:\mathrm{km}$ diameter at nadir viewing geometry. As a consequence, it is necessary to consider the specific sampling pattern for the data sets in the analysis in order to avoid sampling bias (see Section~\ref{sec:sampling_bias}).
 
 For every GOSAT scene, we consider the full footprint as defined by the four extremal points of the footprint ellipse (as given in the L1B data). The following Earth observation datasets are then sampled:
 
@@ -103,22 +104,23 @@ For every GOSAT scene, we consider the full footprint as defined by the four ext
 \item ESA CCI Soil Moisture v3.2 ($0.25^\circ$ resolution, $2010-2015$) \citep{Dorigo2017}
 \item MODIS/Aqua MYD13C1 V006 Vegetation Indices ($0.05^\circ$ resolution, $2010-2016$) \citep{MYD13C1}
 \item MODIS/Aqua MYD11C2 V006 Land Surface Temperature ($0.05^\circ$ resolution, $2010-2016$) \citep{MYD11C2}
-\item SPOT/VEGETATION Leaf Area Index V2.0.1 ($1\:\mathrm{km}$ resolution, $2010-2016$)
-\item SPOT/VEGETATION Fractional Vegetation Cover V2.0.1 ($1\:\mathrm{km}$ resolution, $2009-2016$)
-\item TRMM (3B43, multi-satellite) precipitation ($0.25^\circ$ resolution, $2010-2016$)
+\item SPOT/VGT Leaf Area Index V2.0.1 ($1\:\mathrm{km}$ resolution, $2010-2016$) \citep{maisongrande2004vegetation}
+\item SPOT/VGT Fractional Vegetation Cover V2.0.1 ($1\:\mathrm{km}$ resolution, $2009-2016$) \citep{maisongrande2004vegetation}
+\item TRMM/TPMA (3B43, multi-satellite) precipitation ($0.25^\circ$ resolution, $2010-2016$) \citep{huffman2007trmm}
 \end{itemize}
 
-For the MODIS/Aqua, ESA CCI Land Cover and SPOT/VEGETATION datasets, the scene-specific footprint is fully taken into account. Only those pixels are aggregated to the scene-specific value, whose pixel area overlaps by at least $50\%$ with the GOSAT footprint. Soil moisture and TRMM precipitation data, however, are of lower resolution where sub-pixel aggregation is not required. For TRMM, the grid box is taken in which the GOSAT footprint lies, and for the soil moisture data (which is supplied on grid points rather than grid boxes [DOUBLE CHECK!!]), bi-linear interpolation of the closest four grid points is used.
+For collocation of the EVI/NDVI, ESA CCI Land Cover and FVC/LAI datasets, the scene-specific GOSAT footprint is fully taken into account. Only those pixels are aggregated to the scene-specific value, whose pixel area overlaps by at least $50\%$ with the GOSAT footprint. Soil moisture and TRMM/TPMA precipitation data, however, are of lower resolution where sub-pixel aggregation is not required. For TRMM/TPMA, the grid box is taken in which the GOSAT footprint lies, and for the soil moisture data (which is supplied on grid points rather than grid boxes), bi-linear interpolation of the closest four grid points is used.
 
-In the time dimension, linear interpolation is used for all data sets except for land cover data (annual) and TRMM (monthly).
+In the time dimension, linear interpolation is used for all data sets except for land cover data (annual) and TRMM/TPMA precipitation data (monthly).
 
 
 \subsection{Carbon Fluxes from Inversion of GOSAT CO2 Retrievals}
 \label{sec:fluxes}
 LIANG PLEASE HELP!
 
-\subsection{Agricultural Statistics from USDA}
+\subsection{Agricultural Statistics from the United States Department for Agriculture}
 \label{sec:usda}
+To help interpret the various SIF anomalies in Section~\ref{sec:SIF_TS}, we use the crop summary reports published by the United States Department for Agriculture (USDA). These reports are released annually and contain, amongst other items, overview statistics on crop planting acreage and harvest yield for a given year. They also provide a succinct overview of the climate conditions from planting to harvest and highlight meteorological events and their impacts on agriculture. The second USDA resource used here is the USDA crop survey database (accessed online through https://www.nass.usda.gov/), which collects farmer survey data that allows tracking overall planting progress on a weekly basis at varying levels of spatial aggregation (we used per-state).
 
 \subsection{GOSAT sampling bias}
 \label{sec:sampling_bias}
@@ -127,7 +129,7 @@ As mentioned during the discussion on GOSAT SIF retrievals (Section~\ref{sec:GOS
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../coverage_map.png}
+\includegraphics[width=\linewidth]{../coverage_map.png}
 \caption{Land cover classes (left) and GOSAT sampling density (right) shown for the region of interest ($104$W - $87.5$W, $37$N - $49$N). Yellow land cover pixels correspond to crop, orange represents grassland, green-colored pixels are various tree types, and red areas are urban regions. In the right picture, all GOSAT soundings for the entire time period $2010-2016$ are collected and visualized as a density map (red indicates higher sounding density) to illustrate the both sparse and irregular sampling pattern.}
 \label{fig:sampling}
 \end{figure}
@@ -137,15 +139,15 @@ The question arises, whether the sampling of the various surfaces of the chosen 
 \begin{figure}[htbp]
 \centering
 \includegraphics{../lc_coverage.pdf}
-\caption{Comparison of overall land cover coverage between the entire ROI and GOSAT sampling.}
+\caption{A comparison of overall land cover coverage between the entire ROI and GOSAT sampling. This confirms that the sparse GOSAT sampling pattern well-represents the surface types within the ROI.}
 \label{fig:lc_coverage}
 \end{figure}
 
-Not surprising, more than $75\%$ of surfaces belong to either rainfed cropland or grassland types. The third most common surface type (deciduous tree cover) is mainly due to Ozark National Forest in Missouri, Superior National Forest as well as forests in northern Wisconsin. For the total period, GOSAT is well representing the overall composition of land cover classes of the region of interest. The largest differences are seen for flooded tree cover, where GOSAT is slightly over-representing ($+1.7\%$), and grassland, where GOSAT is under-representing ($-3.3\%$).
+More than $75\%$ of surfaces belong to either rainfed cropland or grassland types. The third most common surface type (deciduous tree cover) is mainly due to Ozark National Forest in Missouri, Superior National Forest as well as forests in northern Wisconsin. For the total period, GOSAT is well-representing the overall composition of land cover classes of the region of interest. The largest differences are seen for flooded tree cover, where GOSAT is slightly over-representing ($+1.7\%$), and grassland, where GOSAT is under-representing ($-3.3\%$).
 
-Repeating the same analysis on a monthly basis, a different picture than Figure~\ref{fig:lc_coverage} can arise, as GOSAT's sampling is not only non-uniform geographically, but also changes over time. In Figure~\ref{fig:lc_diff_monthly}, the differences between GOSAT-seen and total ROI land cover class coverage for monthly aggregates is shown for the three most prevalent classes. We observe that differences can change somewhat drastically, and for certain months even reach $10\%$. Months in which the differences are fairly large for cropland and grassland LC types are: $2013/04$, $2014/02$, $2014/03$, $2014/04$, $2014/11$, $2015/02$ and $2015/04$, $2016/08$. Due to the careful handling of the EO data set sampling, the difference in LC coverage should not have a significant impact on the further analysis and results. It is also important to note that while Figures~\ref{fig:lc_coverage} and \ref{fig:lc_diff_monthly} confirm that the LC classes are more or less well-represented, vegetation responses can vary geographically over the Corn Belt, even though they might share the same LC classification.
+Repeating the same analysis on a monthly basis, a different picture than Figure~\ref{fig:lc_coverage} can arise, as GOSAT's sampling is not only non-uniform geographically, but also changes over time. In Figure~\ref{fig:lc_diff_monthly}, the differences between GOSAT-seen and total ROI land cover class coverage for monthly aggregates is shown for the three most prevalent classes. We observe that differences can change somewhat drastically, and for certain months even reach $10\%$. Months in which the differences are fairly large for cropland and grassland LC types are: $2013/04$, $2014/02$, $2014/03$, $2014/04$, $2014/11$, $2015/02$ and $2015/04$, $2016/08$. Due to the careful handling of the EO data set sampling, the difference in LC coverage should not have a significant impact on the further analysis and results. It is also important to note that while Figures~\ref{fig:lc_coverage} and \ref{fig:lc_diff_monthly} confirm that the LC classes are more or less well-represented, vegetation responses can vary geographically over the Corn Belt, even though they might share the same LC classification. Geographically varying differences in planting dates can lead to crops maturing at different times and thus dilute the ROI-averaged vegetation signals picked up via remote sensing.
 
-As we are interested mainly in the response of crops (corn, soy), only GOSAT measurements that cover at least $50\%$ any cropland-type surface were kept for the subsequent analysis, and we use the SIF retrievals at $755$ nm.
+As we are interested mainly in the response of crops (corn, soy), only GOSAT measurements that cover at least $50\%$ of any cropland-type surface were kept for the subsequent analysis, and we use the SIF retrievals at $755$ nm.
 
  
 \begin{figure}[htbp]
@@ -158,38 +160,36 @@ As we are interested mainly in the response of crops (corn, soy), only GOSAT mea
  
 \section{Results}
 
-\subsection{SIF time series}
+\subsection{SIF time series and anomalies between 2010 and 2016}
 \label{sec:SIF_TS}
 
 The SIF retrievals are aggregated on a monthly basis, where the mean of all measurements inside the ROI for a given month are considered. As we have two different polarizations (P, S) and three different calibration procedures (seasonal, annual, spline-based), there are a total of six SIF time series. Figure~\ref{fig:sif_ts} shows this ensemble of SIF data, where the thick line is the median of all six time series. The bottom panel shows the anomalies, and the shaded area visualizes the respective minimum and maximum value of the given month to show the spread of the ROI-averaged SIF. We find that the variability in the six SIF time series is mostly from the two different polarizations, rather than the calibration methodologies. Months with less than $100$ measurements are dropped from both the visualization and the analysis, which affects only December $2012$ and January $2015$ when GOSAT was only partially operative due to instrumental issues.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../SIF_overview.pdf}
+\includegraphics[width=\linewidth]{../SIF_overview.pdf}
 \caption{The SIF time series (top panel) and corresponding anomaly plot (bottom panel). In the top panel, the green line represents the median of the six monthly-averaged SIF time series (two polarization states, three bias correction schemes), while the blue-dashed line represents the measurement count per month. The dotted lines in the bottom plot mark the $\pm 2\sigma$ and $\pm 3\sigma$ values of the anomalies, and the shaded area is bounded by the lowest and largest value of the six SIF time series.}
 \label{fig:sif_ts}
 \end{figure}
 
-The anomalies in Figure~\ref{fig:sif_ts} (bottom) are calculated as the difference between the current month and the median of all of the same months over the seven-year period. While the time series itself does not immediately reveal any striking features, the anomalies show several important ones. Given this relatively short period of seven years, only one month shows an anomalous value beyond $3\sigma$ (five months beyond $2\sigma$). We conclude that this short time period does not have a clear baseline, and using a simple threshold based on the standard deviation, will result in either too few or too many anomalies. We point to two studies by \citet{sun2015drought} and \citet{wolf2016warm}, which both analyze drought events with respect to a similarly short baseline. \citet{sun2015drought} investigate the 2011 drought over Texas and the 2012 drought over most parts of the central US respectively, through SIF retrieved from GOME-2 in the 2007-2013 time period.  
+The anomalies in Figure~\ref{fig:sif_ts} (bottom) are calculated as the difference between the current month and the median of all of the same months over the seven-year period. While the time series itself does not immediately reveal any striking features, the anomalies show several important ones. Given this relatively short period of seven years, only one month shows an anomalous value beyond $3\sigma$ (five months beyond $2\sigma$). We conclude that this short time period does not have a clear baseline, and using a simple threshold based on the standard deviation, will result in either too few or too many anomalies. We point to two studies by \citet{sun2015drought} and \citet{wolf2016warm}, which both analyze drought events with respect to a similarly short baseline. \citet{wolf2016warm} establish flux anomalies from three eddy covariance towers based on a 2008-2010 baseline,  \citet{sun2015drought} investigate the 2011 drought over Texas and the 2012 drought over most parts of the central US respectively, through SIF retrieved from GOME-2 in the 2007-2013 time period. While the 2011 and 2012 anomalies are both apparent in the given time period, we argue that their magnitude might be wrongly assessed if not compared against the other anomalies. It is therefore important to look at every year and potential anomaly within the context of other climatological and agricultural drivers. In chronological order, the major anomalies can be easily identified and related to known meteorological events. 
 
-[REFERENCE WOLF LIU AND OTHERS AND POINT OUT THAT THEY USED A SIMPLE BASELINE] It is therefore important to look at every year and potential anomaly within the context of other climatological and agricultural drivers. In chronological order, the major anomalies can be easily identified and related to known meteorological events. 
+Starting in $2010$, we see the effects of the rapid El Ni\~no-La Ni\~na transition, which brought excessive rain to the Corn Belt in the summer months and drove plant growth \citep{USDA2010}. This is confirmed through the TRMM/TPMA rainfall anomaly that can be seen in Figure~\ref{fig:anomalies_0}, second row.
 
-Starting in $2010$, we see the effects of the rapid El Ni\~no-La Ni\~na transition, which brought excessive rain to the Corn Belt in the summer months (Fig.~\ref{fig:anomalies_0} second row) and drove plant growth \citep{USDA2010}.
+In $2011$, we see a small negative anomaly for spring, despite average precipitation and temperatures for that season. The reason for the negative anomaly is hinted at by the positive GRACE anomaly for $2011$ (Fig.~\ref{fig:anomalies_0} top row). Large amounts of melting snow in the northern Corn Belt, as well as high precipitation in the south eastern corner (Missouri) have caused massive flooding of the Mississippi and Missouri rivers. As most parts of the ROI have not seen any increased rainfall, the precipitation anomaly plot in Figure~\ref{fig:anomalies_0} (second row) does not show any significant outlier. The flooded areas, however, are visible as a positive anomaly in the GRACE data. While many farmers in the Mississippi River Valley were affected by planting delays due to levee breaches \citep{olson2012impacts}, productive states like Iowa, Nebraska and Kansas were not as severely impacted, hence the lack of a pronounced anomaly \citep{USDA2011}. 
 
-In $2011$, we see a small negative anomaly for spring, despite average precipitation and temperatures for that season. The reason for the negative anomaly is hinted at by the positive GRACE anomaly for $2011$ (Fig.~\ref{fig:anomalies_0} top row). Large amounts of melting snow in the northern Corn Belt, as well as high precipitation in the south eastern corner (Missouri) have caused massive flooding of the Mississippi and Missouri rivers. As most parts of the ROI have not seen any increased rainfall, the precipitation anomaly plot in Figure~\ref{fig:anomalies_0} (second row) does not show any significant outlier. The flooded areas, however, are visible as a positive anomaly in the GRACE data. While many farmers in the Mississippi River Valley were affected by planting delays due to levee breaches \citep{olson2012impacts}, regions like Iowa, Nebraska and Kansas were not as severely impacted, hence the smaller anomaly. 
+The two anomalies in $2012$ are the most well-known and most-studied ones (e.g. \citet{wolf2016warm}). In short, a warm winter and warm spring (see LST anomalies in Fig.~\ref{fig:anomalies_0} third row) caused early and fast vegetation growth. In the following summer, however, anomalously low precipitation (Fig.~\ref{fig:anomalies_0}, second row) was responsible for drought conditions. As a consequence of the early spring onset due to warm temperatures, the plants used up soil water reserves quicker and depleted the soil of moisture, thus exacerbating the drought even further. This $2012$ drought was one of the most severe droughts in recorded history, with conditions comparable to the $1930$'s dustbowl era. The drought conditions are seen equally strongly in the soil moisture (Fig.~\ref{fig:anomalies_0} last row) anomalies, as well as the GRACE water storage anomalies (Fig.~\ref{fig:anomalies_0} top row). 
 
-The two anomalies in $2012$ are the most well-known and most-studied ones (e.g. \citet{wolf2016warm}). In short, a warm winter and warm spring (see LST anomalies in Fig.~\ref{fig:anomalies_0} third row) caused early and fast vegetation growth. In the following summer, however, anomalously low precipitation (Fig.~\ref{fig:anomalies_0} second row) was responsible for drought conditions. As a consequence of the early spring onset due to warm temperatures, the plants used up soil water reserves quicker and depleted the soil of moisture, thus exacerbating the drought even further. This $2012$ drought was one of the most severe droughts in recorded history, with conditions comparable to the $1930$'s dustbowl era. The drought conditions are seen equally strongly in the soil moisture (Fig.~\ref{fig:anomalies_0} last row) anomalies, as well as the GRACE water storage anomalies (Fig.~\ref{fig:anomalies_0} top row). 
+In $2013$ and $2014$, we again see a negative anomaly for spring and early summer. For these two years, the anomalies have similar causes. In the spring months, high precipitation and cool temperatures delayed the planting process - corn seed planting is generally done on warm and dry days \citep{kucharik2008contribution,choi2017climatic} - as well as caused slow maturing of crops. The delayed planting is evident in the USDA surveys and displayed in Figure~\ref{fig:corn_soy_planted_sif} (next section), which shows that the planting progress by calendar week 18 was lowest in the years $2013$ and $2014$ \citep{USDA2013,USDA2014}. 
 
-In $2013$ and $2014$, we again see a negative anomaly for spring and early summer. For these two years, the anomalies have similar causes. In the spring months, high precipitation and cool temperatures delayed the planting process - corn seed planting is generally done on warm and dry days - as well as caused slow maturing of crops. The delayed planting is evident in the USDA surveys and displayed Figure~\ref{fig:corn_soy_planted_sif} (next section), which shows that the planting progress by calendar week 18 was the worst in the years $2013$ and $2014$. 
+The following two years exhibit positive SIF anomalies. In $2015$, near-ideal temperatures and favorable rainfall have led to good growing an maturing conditions for corn and soybeans, despite the rainfall distribution being suboptimal - the southern and eastern regions of the Corn Belt experienced more excessive rain. $2016$ proved to be an even better year for crop production than $2015$, and this is reflected in the SIF anomaly. After an intense El Ni\~no in $2015$, the quick transition to a weak La Ni\~na, and a wet summer has provided ideal conditions for crops \citep{USDA2015,USDA2016}.
 
-The following two years exhibit positive SIF anomalies. In $2015$, near-ideal temperatures and favorable rainfall have led to good growing an maturing conditions for corn and soybeans, despite the rainfall distribution being suboptimal - the southern and eastern regions of the Corn Belt experienced more excessive rain. $2016$ proved to be an even better year for crop production than $2015$, and this is reflected in the SIF anomaly. After an intense El Ni\~no in $2015$, the quick transition to a weak La Ni\~na, and a wet summer has provided ideal conditions for crops.
-
-A short summary is given in Table~\ref{tbl:anomaly_table}.
+A short summary is given in Table~\ref{tbl:anomaly_table}. The USDA crop summary reports highlight the fact that almost every year between 2010 and 2016 had one or more meteorological events occur which impacted the Corn Belt agriculture. 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../anomalies_755_abs_0_median.pdf}
-\caption{Anomalies of GRACE water equivalent thickness (cm), precipitation, land surface temperature and soil moisture (all in blue), along with SIF anomalies (dashed, green).}
+\includegraphics[width=\linewidth]{../anomalies_755_abs_0_median.pdf}
+\caption{Anomalies of GRACE water equivalent thickness (cm), precipitation, land surface temperature and soil moisture (all in blue), along with SIF anomalies (dashed, green). The ordinate axes ticks on the left hand side refer to the non-SIF anomalies (GRACE, precipitation, LST, soil moisture). SIF anomalies are plotted for visual comparison, and tick labels have been omitted for better legibility. The GRACE time series has several gaps, which is mainly due to aging batteries on the GRACE satellite.}
 \label{fig:anomalies_0}
 \end{figure}
 
@@ -208,15 +208,16 @@ Year & Anomaly & Details \\
 \hline
 $2010$ & $+$   & Quick El Ni\~no-La Ni\~na transition, \\
              & & high precipitation during summer \\
-$2011$ & $-$   & Snow melt caused flooding, delaying planting \\
-             & & in some areas of the Corn Belt (NM, SD, ND, WI) \\
+$2011$ & $-$   & Snow melt caused flooding, delaying \\
+             & & planting in MN, SD, ND, and WI \\
 $2012$ & $+/-$ & Warm spring induced early onset, \\
              & & summer drought collapsed yield \\
 $2013$ & $-$   & Cold and wet spring delayed planting \\
 $2014$ & $-$   & -same- \\
 $2015$ & $+$   & Good planting and growing conditions, \\
              & & despite large rainfall due to El Ni\~no \\
-$2016$ & $+$ & Weak La Ni\~na/wet summer for good conditions \\
+$2016$ & $+$   & Weak La Ni\~na/wet summer for \\
+             & & good conditions \\
 \end{tabular}
 \end{center}
 \label{tbl:anomaly_table}
@@ -224,106 +225,121 @@ $2016$ & $+$ & Weak La Ni\~na/wet summer for good conditions \\
 \end{table}%
 
 
-
 \subsection{Flux inversion}
 
-SIF is intrinsically linked to primary production (GPP) as it is a by-product of the photosynthetic process that ultimately leads to carbon fixation. As such, the relationship between SIF and GPP has been explored early on when global-scale retrievals of SIF were performed \citep{Frankenberg2011,Guanter2012}. The SIF-GPP relationship has been described as linear when averaged on regional scale and with time, with a potential dependence on biome. Recent studies, however, have shown that the SIF-GPP relationship can change significantly when plants are undergoing stress, such as from a drought \citep{Wieneke2018,Wohlfahrt2018}.
+SIF is intrinsically linked to primary production (GPP) as it is a by-product of the photosynthetic process that ultimately leads to carbon fixation. As such, the relationship between SIF and GPP has been explored early on when global-scale retrievals of SIF were performed \citep{Joiner2011,Frankenberg2011,Guanter2012}. The SIF-GPP relationship has been described as linear when averaged on regional scale and with time, with a potential dependence on biome. Recent studies, however, have shown that the SIF-GPP relationship can change significantly when plants are undergoing stress, such as from a drought \citep{Wieneke2018,Wohlfahrt2018}.
 
-We compare gross (GPP) and net flux (NPP) 
-anomalies from the Carnegie-Ames-Stanford-Approach (CASA) model, as well as net flux anomalies obtained through the inversion of GOSAT XCO$_2$ measurements (see Section~\ref{sec:fluxes}) to the SIF anomalies. Figure~\ref{fig:anomalies_3} shows that the large drought event of 2012 is represented in both gross and net fluxes - several other anomalies (2010, 2011, 2015) are also well-represented in both model fluxes, and the fluxes obtained through inversions. The surface fluxes anomalies here are also sampled at the GOSAT measurement locations. QUESTION: Is it legit to sample surface fluxes at GOSAT locations, or do I need the full ROI?
+We compare gross (GPP) and net flux (NPP) anomalies from the Carnegie-Ames-Stanford-Approach (CASA) model \citep{potter1993terrestrial}, as well as net flux anomalies obtained through a global inversion of GOSAT XCO$_2$ total column measurements (see Section~\ref{sec:fluxes}) to the SIF anomalies. Figure~\ref{fig:anomalies_3} shows that the large drought event of 2012 is represented in both gross and net fluxes - several other anomalies (2010, 2011, 2015) are also well-represented in both model fluxes, and the fluxes obtained through inversions. The surface fluxes anomalies here are also sampled at the GOSAT measurement locations.
 
-\begin{figure}[htbp]
+\begin{figure}[htb!]
 \centering
-\includegraphics{../anomalies_755_abs_2_median.pdf}
-\caption{Flux anomalies [gC/m$^2$/yr] overlaid on top of SIF anomalies [mW/m$^2$/sr/nm].}
+\includegraphics[width=\linewidth]{../anomalies_755_abs_2_median.pdf}
+\caption{Flux anomalies [gC/m$^2$/yr] overlaid on top of SIF anomalies [mW/m$^2$/sr/nm]. CASA GPP is used as a prior for the flux inversion scheme.}
 \label{fig:anomalies_3}
 \end{figure}
 
+While we did not perform high-resolution flux inversions as done by \citet{lauvaux2012constraining}, we do see that the posterior net fluxes, integrated over the growing period Apr-Jul, agree better with the cumulative SIF when compared to CASA net fluxes, as shown in Figure~\ref{fig:SIF_flux_cumulative}. The CASA GPP, however, compares even better ($r = 0.92$). Again, this is most likely due to CASA GPP being constrained by NDVI, and a similar analysis between cumulative SIF and cumulative NDVI yielding moderate agreement already ($r = 0.57$, not shown).
+
+\begin{figure}[htb!]
+\centering
+\includegraphics[width=\linewidth]{../SIF_flux_cumulative_CASA_NEE.pdf}
+\caption{yadda yadda}
+\label{fig:SIF_flux_cumulative}
+\end{figure}
+
+SIF is generally thought to be a proxy for gross carbon uptake, rather than net flux, so the good agreement between integrated fluxes and SIF ($r = 0.70$) might seem surprising. The difference between total carbon uptake and net fluxes are usually summarized in the respiration term which (over land surfaces) comprises plant respiration, soil respiration and litter decomposition. From a flux inversion point of view, respiration and its components can not be easily disentangled from the net fluxes. \citet{byrne2018evaluating} have published efforts using models and SIF to decompose posterior (net) fluxes from respiration. Given that respiration roughly follows the trend of total uptake, and that we observe a large spatially-averaged and time-integrated composite signal, the agreement between posterior fluxes from the inversion and GOSAT SIF is reasonable.
+
+\textit{I CAN NOT MAKE THIS WORK AT ALL - ANY IDEAS? I DON'T THINK WE HAVE THE TIME/EFFORT TO VALIDATE THE FLUXES LIKE IN THE LAUVAUX/SCHUH PAPER, SO WHAT ARE WE GOING TO DO HERE?}
+
 \subsection{Crop planting and yield}
 
-The US Corn Belt is a very specific type of biome. As recently investigated by \citet{Alter2017}, it even generates its own climate, with the agricultural intensification resulting in cooler temperatures and increased rainfall. Despite the ROI being almost $1800 \times 10^9\;\mathrm{m}^2$ ($\approx 440$ million acres) in area, around half of it is irrigated cropland. Meteorological conditions are thus not the only factor in determining the vegetation onset and productivity of one given season. It was pointed out in Section~\ref{sec:SIF_TS} that for certain years, the springtime rainfall has caused delays in the planting of crops. To show that SIF indeed captures the delays in planting, we compare against the USDA crop progress reports \citep{USDA2010,USDA2011,USDA2012,USDA2013,USDA2014,USDA2015,USDA2016}. In these reports, the percentage of acreage planted is recorded based on farmer surveys. We translate these weekly state-wide data for the whole ROI by multiplying with the total planted area for that given year and state in order to obtain an effective "planted area". We compare this number for every year against the integrated (or cumulative) SIF radiances (monthly ROI averages) from April onwards to June.
+The US Corn Belt is a very specific type of biome. As recently investigated by \citet{Alter2017}, it even generates its own climate, with the agricultural intensification resulting in cooler temperatures and increased rainfall. Despite the ROI being almost $1800 \times 10^9\;\mathrm{m}^2$ ($\approx 440$ million acres) in area, around half of it is irrigated cropland. Meteorological conditions are thus not the only factor in determining the vegetation onset and productivity of one given season. It was pointed out in Section~\ref{sec:SIF_TS} that for certain years, the springtime rainfall has caused delays in the planting of crops. To show that SIF indeed captures the delays in planting, we compare against the USDA/NASS survey data. In these reports, the percentage of acreage planted is recorded based on farmer surveys. We translate these weekly state-wide data for the whole ROI by multiplying with the total planted area for that given year and state in order to obtain an effective "planted area". We compare this number for every year against the integrated (or cumulative) SIF radiances (monthly ROI averages) from April onwards to June.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../corn_soy_planted_sif_18.pdf}
+\includegraphics[width=\linewidth]{../corn_soy_planted_sif_18.pdf}
 \caption{Crop planting progress (1 acre $\approx 4047$ m$^2$) at week 18 as a function of time-integrated monthly SIF radiances from February to June. Uncertainty bars for SIF is the standard error on the 6 different SIF time series. Low values for the years $2013$ and $2014$ are the result of planting delays due to rainfall and cold temperatures (see Section \ref{sec:SIF_TS}). The values in the brackets within the regression equation (above plots) is the uncertainty of the fitted slope and offset.}
 \label{fig:corn_soy_planted_sif}
 \end{figure}
 
-The result for both corn and soybeans is shown in Figure~\ref{fig:corn_soy_planted_sif}. It shows that the time-integrated SIF radiances correspond very well to the crop planting progress of that given year at the first week of May (week 18). Week 18 was chosen as a reference point as it is generally in the first half of the planting season, which usually starts in early April, or week 14. \citet{grassini2011high} state the mean planting date (or sowing date) at day 117 of the year (last week of April) for the years 2005 to 2007 for their study in Nebraska. Between 2010 and 2016, planting progress has reached close to $100\%$ by week 23 (beginning of June) according to USDA surveys, and no planting has been done after week 26. Before week 17, the variability of planting is too high between nine states and the ROI-averaged SIF is therefore not representative of the Corn Belt as a whole. Table~\ref{tbl:planting_progress_table} shows the correlation coefficients of the relationships between SIF and planting progress (as in Figure~\ref{fig:corn_soy_planted_sif}) along with the coefficient of variation (COV) of the planting progress of the given week, averaged over the 7 years.
-
+The result for both corn and soybeans is shown in Figure~\ref{fig:corn_soy_planted_sif}. It shows that the time-integrated SIF radiances correspond well to the crop planting progress of that given year at the first week of May (week 18). Week 18 was chosen as a reference point as it is generally in the first half of the planting season, which usually starts in early April, or week 14. \citet{grassini2011high} state the mean planting date (or sowing date) at day 117 of the year (last week of April) for the years 2005 to 2007 for their study in Nebraska. Between 2010 and 2016, planting progress has reached close to $100\%$ by week 23 (beginning of June) according to USDA surveys, and no planting has been done after week 26. Before week 17, the variability of planting is too high between nine states and the ROI-averaged SIF is therefore not representative of the Corn Belt as a whole. Table~\ref{tbl:planting_progress_table} shows the correlation coefficients of the relationships between SIF and planting progress (as in Figure~\ref{fig:corn_soy_planted_sif}) along with the coefficient of variation (COV) of the planting progress of the given week for all states, averaged over the 7 years. A higher value indicates larger variation in planting progress between the nine states.
 
 \begin{table}[htp]
 \begin{center}
 \begin{tabular}{r|c|c|c|c}
-Week Nr. & COV Corn & COV Soybeans & Corn & Soybeans \\
+Week Nr. & COV Corn & COV Soy & Corn & Soy \\
 \hline
-16 & 1.04 & 1.37 & $r = 0.59$ & $r = 0.27$ \\
-17 & 0.80 & 1.06 & $r = 0.60$ & $r = 0.51$ \\
-18 & 0.48 & 0.96 & $r = 0.78$ & $r = 0.71$ \\
-19 & 0.31 & 0.61 & $r = 0.56$ & $r = 0.65$ \\
-20 & 0.18 & 0.45 & $r = 0.78$ & $r = 0.65$ \\
+16 & 1.04 & 1.37 & $r = 0.77$ & $r = 0.23$ \\
+17 & 0.80 & 1.06 & $r = 0.77$ & $r = 0.66$ \\
+18 & 0.48 & 0.97 & $r = 0.92$ & $r = 0.91$ \\
+19 & 0.31 & 0.62 & $r = 0.70$ & $r = 0.79$ \\
+20 & 0.18 & 0.45 & $r = 0.69$ & $r = 0.66$ \\
 %21 & 0.09 & 0.30 &            &            \\
 %22 & 0.05 & 0.21 &            &            \\
 \end{tabular}
 \end{center}
 \label{tbl:planting_progress_table}
-\caption{Relationship between cumulative SIF (Apr-Jun) and planting progress for different weeks of the year, each row representing the same analysis as in Figure~\ref{fig:corn_soy_planted_sif}.}
+\caption{Relationship between cumulative SIF (Apr-Jun) and planting progress for different weeks of the year, each row representing the same analysis as in Figure~\ref{fig:corn_soy_planted_sif}. Soybean planting generally does not start until week 17.}
 \end{table}%
 
-The SIF radiances do not only reflect the crop status during the growing season. Also the total corn and soybean yield for the entire year has an apparent linear relationship with the cumulative SIF radiances from July until October (harvest), as can be seen in Figure~\ref{fig:corn_soy_yield_sif}. The record-low yield due to the 2012 drought is highly apparent in the figure, also making it clear that a yield prognosis based on planting progress alone (Fig.~\ref{fig:corn_soy_planted_sif}) is not feasible.
+The SIF radiances do not only reflect the crop status during the growing season. Also the total corn and soybean yield for the entire year has an apparent linear relationship with the cumulative SIF radiances from July until October (harvest), as can be seen in Figure~\ref{fig:corn_soy_yield_sif}. The record-low yield due to the 2012 drought is also highly apparent in the figure. As the SIF integration time goes past the reference planting date, we assume that the cumulative SIF tracks the planting onset by proxy through the development of the crops in their first three months.
+
+This type of analysis has been published before, recently in a study by \citet{glennie2018midwest}, in which they use a long-term (1982 - 2014) NDVI record from the Advanced Very High Resolution Radiometer (AVHRR) instrument and compare them to yield data. Due to the high spatial resolution of the AVHRR instrument (8 km) and coverage (2500 km swath width), their cumulative NDVI-to-yield relationship could be established year-to-year, comparing annual yields for individual counties in the Corn Belt. They find moderately strong correlations ($r > 0.58$) which varies for every year. As  \citet{glennie2018midwest} have done, we have also detrended the crop yields using a linear fit through the mean yields from 1955 onwards, although the impact on the results is small, mostly due to the short time period.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../corn_soy_yield_sif.pdf}
-\caption{Annual crop yield (1 bushel corn $\approx 25.4$ kg, 1 bushel soybean $\approx 27.2$ kg) from June to October as a function of the time-integrated monthly SIF radiances from July to October. The uncertainty bars for crop yield is the standard error of all nine states within the ROI, however that number is not taken into account for the linear regression.}
+\includegraphics[width=\linewidth]{../corn_soy_yield_sif.pdf}
+\caption{Annual crop yield (1 bushel corn $\approx 25.4$ kg, 1 bushel soybean $\approx 27.2$ kg) from June to October as a function of the time-integrated monthly SIF radiances from July to October. The uncertainty bars for crop yield represent the standard deviation for the values of all nine states within the ROI. The color/symbol coding is the same as in Figure~\ref{fig:corn_soy_planted_sif}.}
 \label{fig:corn_soy_yield_sif}
 \end{figure}
 
-The observed good relationship between cumulative SIF, and crop planting and crop yield is not particularly surprising, given the already moderate correlation between the SIF and NDVI/EVI time series anomalies ($r > 0.4$, see Appendix Figure~\ref{fig:anomalies_vi}). The predictive power of hyperspectral indices from remote sensing instruments in characterizing crop yield has been demonstrated in the past, such as by \citet{Shanahan2001}, \citet{Prasad2006}, \citet{Beckerreshef2010} and \citet{Mkhabela2011}. For the case of the Corn Belt, (monthly cumulative) NDVI/EVI are worse predictors than SIF for planting ($r = 0.59$ / $r = 0.56$ for corn) but slightly better predictors when looking at yield ($r = 0.91$ / $r = 0.87$ for corn). Similarly good predictors are leaf area index (LAI) and fractional vegetation cover (FVC) with $r = 0.90$ and $r = 0.86$ for corn yield, but are worse for corn planting progress ($r = 0.54$ / $r = 0.51$).
+The observed good relationship between cumulative SIF, and crop planting and crop yield is not particularly surprising, given the already moderate correlation between the SIF and NDVI/EVI time series anomalies ($r > 0.4$, see Appendix Figure~\ref{fig:anomalies_vi}). The predictive power of hyperspectral indices from remote sensing instruments in characterizing and predicting crop yield has been demonstrated in the past, such as by \citet{Shanahan2001}, \citet{Prasad2006}, \citet{Beckerreshef2010}, \citet{Mkhabela2011}, \citet{sakamoto2014near} and many more. For the case of the Corn Belt, (monthly cumulative) NDVI/EVI are slightly worse predictors than SIF for planting ($r = 0.72$ / $r = 0.69$ for corn) similarly good predictors when looking at yield ($r = 0.90$ / $r = 0.88$ for corn). Similarly good predictors are leaf area index (LAI) and fractional vegetation cover (FVC) with $r = 0.91$ and $r = 0.87$ for corn yield and corn planting progress ($r = 0.84$ / $r = 0.77$).
 %The better performance of NDVI/EVI as well as LAI and FVC most likely stem from the noisy nature of the SIF data (see Section \ref{sec:GOSAT_SIF}). Even at the scale of the ROI, monthly values of the ROI-averaged SIF can have an attached uncertainty of at least $\approx 20\%$ (estimated through sub-regional aggregation).
 
-A potential weakness regarding the relationship between SIF and crop yields is the following. We cannot simply deduce from the SIF measurements alone, whether GOSAT is observing stronger SIF due to the photosynthetic response of crops, or whether GOSAT is merely seeing larger amounts of vegetated area. To exclude this possibility, we construct three control time series to compare against the results seen in Figure~\ref{fig:corn_soy_yield_sif}.
+A potential weakness regarding the relationship between SIF and crop yields is the following. We cannot simply deduce from the SIF measurements alone, whether GOSAT is observing stronger SIF due to the photosynthetic response of crops, or if the footprints are merely seeing larger amounts of vegetated area. We can easily establish that the retrieved surface reflectivity (Lambertian albedo) is not contributing to the observed relationships, as the SIF and albedo anomalies are not correlated ($r < 0.11$). To further exclude the possibility of GOSAT SIF measuring only the change in vegetated area, we construct three control time series to compare against the results seen in Figure~\ref{fig:corn_soy_yield_sif}.
 
-The first control is to look at the relationship between total planted area in the nine states against crop yield, where the planted area and yield values are separate for each crop. This is shown in Figure~\ref{fig:corn_soy_yield_TOTAL_PLANTED}. We see a positive correlation for soybeans ($r = 0.61$), whereas for corn, there is a surprising negative, weak ($r = 0.27$) and statistically insignificant correlation ($p=0.23$). This negative correlation for corn is solely due to the year 2012, removing that one data point reduces the correlation coefficient to $r = 0.00$, which is already hinted by the large p-value of $0.23$. The positive and significant correlation for soybeans is explained through both the steadily increasing yields together with a general increase in soybean planting. The USDA projects soybeans to reach similar levels to corn in terms of amount of planted acres in the near future \citep{USDA-prognosis}. We cannot distinguish whether a specific GOSAT footprint covered a soy field or a corn field (or any other crop) at the time of measurement. Hence we can not completely reject the possibility that the SIF signal we see in Figure~\ref{fig:corn_soy_yield_sif} is due to mainly covering soybean fields. Since most farmers in the Corn Belt practice individual crop rotation between corn and soybeans \citep{suyker2012gross}, it is most likely that we are sampling a mix between corn, soybeans, and to a lesser extent, wheat. We therefore assume that the SIF-yield relationship is not driven due to sampling that is heavily weighted towards soybean fields.
+The first control aims at the relationship between total planted area in the nine states against crop yield, where the planted area and yield values are separate for corn and soybeans. This is shown in Figure~\ref{fig:corn_soy_yield_TOTAL_PLANTED}. We see a positive correlation for soybeans ($r = 0.61$), whereas for corn, there is a surprising negative, weak correlation  ($r = 0.27$) with low statistical significance ($p = 0.23$). This negative correlation for corn is solely due to the year 2012, removing that one data point reduces the correlation coefficient to $r = 0.00$, which is already hinted by the large p-value of $0.23$. The positive and significant correlation for soybeans is explained through both the steadily increasing yields together with a general increase in soybean planting. The USDA projects soybeans to reach similar levels to corn in terms of amount of planted acres in the near future \citep{USDA-prognosis}. With the used auxiliary data, we cannot distinguish whether a specific GOSAT footprint covered a soy field or a corn field (or any other crop) at the time of measurement. Hence we can not completely reject the possibility that the SIF signal we see in Figure~\ref{fig:corn_soy_yield_sif} is due to mainly covering soybean fields. \textbf{The USDA crop data layer would provide this information at high resolution.} Since most farmers in the Corn Belt practice individual crop rotation between corn and soybeans \citep{suyker2012gross}, it is most likely that we are sampling a mix between corn, soybeans, and to a lesser extent, wheat, and that the relative contribution of each crop does not vary by large amounts over the years. We therefore assume that the SIF-yield relationship is not driven due to sampling that is heavily weighted towards soybean fields.
  
 \begin{figure}[htbp]
 \centering
-\includegraphics{../corn_soy_yield_TOTAL_PLANTED.pdf}
+\includegraphics[width=\linewidth]{../corn_soy_yield_TOTAL_PLANTED.pdf}
 \caption{Crop yield versus the total planted area in that year, with planted area vales for the specific crop.}
 \label{fig:corn_soy_yield_TOTAL_PLANTED}
 \end{figure}
 
-The second control relies on a similar idea, however focuses on satellite-derived vegetation data. We aggregate the NDVI grid boxes ($0.05^\circ$ resolution) in the ROI, which according to the ESA CCI LC map have at least $5\%$ of rainfed cropland land cover classes. For every year between 2010 and 2016, an NDVI map is then created in which every grid cell contains the maximal NDVI value for that year. Finally, the fraction of grid cells which exhibit an NDVI value above $0.3$ is calculated. A value of $0.3$ is a low enough threshold that should discriminate between a vegetated and non-vegetated surface. This provides a first order estimate of the number of grid cells that have some level of vegetation in them. As seen in Fig.~\ref{fig:corn_soy_yield_VI_FRACTION}, this fraction of vegetated area (reduced to crop-covered pixels within the ROI) does not provide a better correlation with crop yields as SIF or vegetation indices themselves. What this analysis shows, however, is that practically every grid cell ($>98\%$) covering crop fields has been vegetated at some point during the year. Both correlation coefficients are statistically not significant with $p > 0.1$, mainly due to the fact that the NDVI fraction only changes by about $1\%$. Compared to Figure~\ref{fig:corn_soy_yield_TOTAL_PLANTED}, we cannot distinguish whether a pixel belongs to a corn or soybean field, and hence cannot split the NDVI fraction into corn and soy components.
+The second control relies on a similar idea, however focuses on satellite-derived vegetation data. We aggregate the NDVI grid boxes ($0.05^\circ$ resolution) in the ROI, which according to the ESA CCI LC map have at least $5\%$ of rainfed cropland land cover classes. For every year between 2010 and 2016, an NDVI map is then created in which every grid cell contains the maximal NDVI value for that year. Finally, the fraction of grid cells which exhibit an NDVI value above $0.3$ is calculated. A value of $0.3$ is a low enough threshold that should discriminate between a vegetated and non-vegetated surface. This provides a first order estimate of the number of grid cells that have some level of vegetation in them. As seen in Fig.~\ref{fig:corn_soy_yield_VI_FRACTION}, this fraction of vegetated area (reduced to crop-covered pixels within the ROI) does not provide a better correlation with crop yields as SIF or vegetation indices themselves. What this analysis shows, however, is that practically every grid cell ($>98\%$) covering crop fields has been vegetated at some point during the year. Both correlation coefficients are statistically not significant with $p > 0.1$, mainly due to the fact that the NDVI fraction only changes by about $1\%$. As opposed to Figure~\ref{fig:corn_soy_yield_TOTAL_PLANTED}, we cannot distinguish whether a pixel belongs to a corn or soybean field, and hence cannot split the NDVI fraction into corn and soy components.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../corn_soy_yield_VI_FRACTION.pdf}
+\includegraphics[width=\linewidth]{../corn_soy_yield_VI_FRACTION.pdf}
 \caption{Crop yield vs the fraction of valid NDVI pixels $> 0.3$. The correlation coefficients $r > 0.4$ suggest that the annual crop yield is weakly related to the total area of tilled fields for both corn and soybean crops.}
 \label{fig:corn_soy_yield_VI_FRACTION}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../ndvi_crop/2012_VI_11_maximum.pdf}
+\includegraphics[width=\linewidth]{../ndvi_crop/2012_VI_11_maximum.pdf}
 \caption{THIS IS A DEBUG PLOT - DELETE ME. 2012 all NDVI grid cells that are over $5\%$ crop LC. This shows the max NDVI of 2012. Apart from eastern Colorado, the rest of the ROI (valid crop pixels) is vegetated at some point in the year.}
 \label{fig:debug1}
 \end{figure}
 
-For the third control, we investigate a potential sampling bias. Already shown in Figure~\ref{fig:lc_diff_monthly}, there is a variability in terms of the surfaces sampled by GOSAT, mostly a result of changing cloud cover and sampling strategy. We compare the crop yield to the fraction of cropland (as determined by the ESA CCI LC map) that all GOSAT soundings see in a given year. Here we use the same set of soundings that was pre-filtered beforehand, so only individual soundings are considered that cover more than $50\%$ of the crop type land cover type. The observed correlations at $r < 0.36$ are weaker than in Figure~\ref{fig:corn_soy_yield_VI_FRACTION} ($r > 0.41$), but neither relationship is statistically significant ($p > 0.15$).
+For the third control, we investigate a potential sampling bias. Already shown in Figure~\ref{fig:lc_diff_monthly}, there is a variability in terms of the surfaces sampled by GOSAT, mostly a result of changing cloud cover and sampling strategy. We compare the crop yield to the fraction of cropland (as determined by the ESA CCI LC map) that all GOSAT soundings see in a given year. Here we use the same set of soundings that was pre-filtered beforehand, so only individual soundings are considered that cover more than $50\%$ of the crop type land cover type. The observed correlations at $r < 0.36$ are weaker than in Figure~\ref{fig:corn_soy_yield_VI_FRACTION} ($r > 0.41$), but neither relationship seems statistically significant ($p > 0.15$).
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{../corn_soy_yield_LC_FRACTION.pdf}
+\includegraphics[width=\linewidth]{../corn_soy_yield_LC_FRACTION.pdf}
 \caption{Crop yield vs the total fraction LC crop type surface seen in a given year.}
 \label{fig:corn_soy_yield_LC_FRACTION}
 \end{figure}
 
-Despite the fact that two of the three controls (Fig.~\ref{fig:corn_soy_yield_VI_FRACTION} and \ref{fig:corn_soy_yield_LC_FRACTION}) exhibit a moderate correlation with crop yields, the SIF radiances show a much higher one. We thus conclude that GOSAT SIF (and vegetation indices) does not merely track whether a surface was vegetated, but can also provide information on the vegetation density and yield through the intensity of the signal. 
+Despite the fact that two of the three controls (Fig.~\ref{fig:corn_soy_yield_VI_FRACTION} and \ref{fig:corn_soy_yield_LC_FRACTION}) exhibit a moderate correlation with crop yields, the SIF radiances show a much higher one. We thus conclude that GOSAT SIF (and vegetation indices) does not merely track whether a surface was vegetated, but can also provide information on the vegetation density and yield through the intensity of the signal. We treat these results cautiously, however, as the results shown in Figures~\ref{fig:corn_soy_planted_sif} and \ref{fig:corn_soy_yield_sif}.
 
 
 \section{Conclusions}
+We have presented a study of the US Corn Belt over the period of 7 years (2010-2016) that focuses on inter-annual variability and puts apparent anomalies into the context of agriculture. Several satellite-based data products were used to construct a coherent picture of the vegetation responses, which were mainly interpreted through GOSAT-based SIF with the help of USDA crop summary reports, which proved an invaluable resource. While we remain careful about claiming SIF to be superior compared to the more traditional reflectance-based vegetation indices, our work hints towards that being the case for this particular region. We were able to make a thorough comparison only because sampling was taken into account very carefully, ensuring that time series anomalies were calculated by considering the spatial extent of GOSAT footprints. Due to exactly collocating other satellite-based datasets, we are able to keep sampling bias to a minimum when comparing GOSAT SIF to other surface-type and atmospheric variables. While data sparsity is an issue, we are hopeful that in the near future, space-based SIF measurements can play a supporting role in crop monitoring and yield prediction, along with the traditional reflectance-based vegetation indices.
 
+The biggest challenge of this type of analysis remains the particular sampling pattern of GOSAT, which is non-uniform as well as low in the total number of measurements in a given time period. Due to the low number of measurements, it is both very difficult to analyze regions much smaller Corn Belt, as well as using smaller time intervals than a month. Newer space-based instruments, such as OCO-2 and TROPOMI, however, are capable of measuring SIF at a much higher spatial resolution \citep{sun2018overview,kohler2018global}. Especially TROPOMI has the advantage of being a wide-swath instrument, which provides near-global coverage on a daily basis. The ESA Earth Explorer Mission FLEX \citep{drusch2017fluorescence} is dedicated to SIF and will launch in 2023. Despite being designed for smaller swath (150 km), its 300m resolution FLORIS instrument will provide an opportunity to observe SIF on the scale of crop fields. 
+%In the coming years, we expect to see more work on crop monitoring and yield prediction being published using SIF from these new space-based instruments.
 
 
 \section*{}
@@ -332,10 +348,20 @@ Despite the fact that two of the three controls (Fig.~\ref{fig:corn_soy_yield_VI
 \appendix
 \section{Additional Plots}
 
+
 \begin{figure}[htbp]
 \centering
-\includegraphics{../anomalies_755_abs_1_median.pdf}
-\caption{SIF anomaly compared to the normalized differential vegetation index (NDVI), enhanced vegetation index (EVI), fractional vegetation cover (FVC) and leaf area index anomalies (LAI). Both FVC and LAI reproduce almost the same anomalies as SIF with the main difference being the strength of the positive 2010 anomaly, and LAI not showing any anomaly in 2014 at all. NDVI and EVI show a more extended positive anomaly for the 2011/2012 winter season.}
+\includegraphics[width=\linewidth]{../2012_curves_lowess2.pdf}
+\caption{GOSAT SIF calibration curves for P and S polarized radiances, based on measurements from the year 2012. $z_0$ is the raw, uncorrected SIF, here in units of percentage of the mean radiance in the O$_2$ A-band (band 1). The high- and medium-gain measurements differ significantly in terms of their radiance-dependence.}
+\label{fig:calibration_curves}
+\end{figure}
+
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{../anomalies_755_abs_1_median.pdf}
+\caption{SIF anomaly compared to the normalized differential vegetation index (NDVI), enhanced vegetation index (EVI), fractional vegetation cover (FVC) and leaf area index anomalies (LAI). Both FVC and LAI reproduce almost the same anomalies as SIF with the main difference being the strength of the positive 2010 anomaly, and LAI not showing any anomaly in 2014 at all. NDVI and EVI show a more extended positive anomaly for the 2011/2012 winter season, mainly due to the low amount of snow cover in that winter as a result of above-average temperatures. This is supported by the soil moisture anomaly (Figure~\ref{fig:anomalies_0}). (\textbf{I have a MODIS snow cover anomaly plot to show this, but I guess this would be overload?})}
 \label{fig:anomalies_vi}
 \end{figure}
 

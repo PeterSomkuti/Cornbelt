@@ -53,6 +53,18 @@ df_pp_wheat =  pd.read_csv('progress_wheat.csv', sep=',', thousands=',')
 df_production = pd.read_csv('corn_soy_production.csv', sep=',', thousands=',')
 df_yield = pd.read_csv('corn_soy_yield.csv', sep=',', thousands=',')
 
+df_planted_soy = df_pp_soy.iloc[np.where(df_pp_soy["Data Item"] == "SOYBEANS - PROGRESS, MEASURED IN PCT PLANTED")[0],:]
+df_planted_corn = df_pp_corn.iloc[np.where(df_pp_corn["Data Item"] == "CORN - PROGRESS, MEASURED IN PCT PLANTED")[0],:]
+
+
+for week in range(16, 21):
+    cov = []
+    for year, dfp in df_planted_soy.query(f"Period == 'WEEK #{week}'").groupby("Year"):
+        #print(year, dfp.Value.mean(), dfp.Value.std())
+        cov.append(dfp.Value.std() / dfp.Value.mean())
+    print(week, np.mean(cov))
+
+
 # Quality
 df_status_corn = pd.read_csv('quality_all_corn.csv', sep=',', thousands=',')
 
